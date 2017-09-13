@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch YuyukoBot",
+            "type": "Ruby",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "program": "${workspaceRoot}/yuyuko.rb",
+            "args": ["-l", "info", "-b", "yuyuko"]
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+core:
+  bots:
+    default:
+      owner_id:
+        - 000000000000000000
+      command_prefix: "."
+      login:
+        type: :bot
+        client_id: 000000000000000000
+        token: place.your.token.here

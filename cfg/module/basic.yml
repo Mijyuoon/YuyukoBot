@@ -1,0 +1,41 @@
+mod:
+  basic:
+    embed:
+      status:
+        color: 0xD054A8
+        thumbnail:
+          width: 40
+          height: 40
+          url: "http://i.imgur.com/2s55Vxb.png"
+        fields:
+          - name: t@mod.basic.status.owner
+            value: s@creator|mod.basic.status.no_owner
+          - name: t@mod.basic.status.uptime
+            value: s@uptime
+          - name: t@mod.basic.status.present
+            value: t@mod.basic.status.presence
+
+      help:
+        list:
+          color: 0x70C040
+          title: t@bot.cmd_info.list
+          description: s@cmds
+        single:
+          color: 0x70C040
+          title: t@bot.cmd_info.$
+          description: st@desc|bot.cmd_info.no_desc
+          fields:
+            - name: t@bot.cmd_info.usage
+              value: st@usage|bot.cmd_info.no_usage
+            - name: t@bot.cmd_info.alias
+              value: st@alias|bot.cmd_info.no_alias
+        invalid:
+          color: 0xFF3333
+          description: t@bot.cmd_info.invalid
+
+      img_frame:
+        title: s@name
+        image:
+          width: 60
+          height: 60
+          url: s@image_url

@@ -1,0 +1,30 @@
+core:
+  embed:
+    cmd_error:
+      _generic: &cmd_error
+        title: t@bot.cmd_error.$
+        color: 0xFF3333
+
+      invalid:
+        <<: *cmd_error
+        description: t@bot.cmd_error.invalid
+
+      syntax: &cmd_error_syntax
+        <<: *cmd_error
+        description: t@bot.cmd_error.syntax
+        fields:
+          - name: t@bot.cmd_info.usage
+            value: st@usage|bot.cmd_info.no_usage
+
+      arguments:
+        many:
+          <<: *cmd_error_syntax
+          description: t@bot.cmd_error.arguments.many
+        few:
+          <<: *cmd_error_syntax
+          description: t@bot.cmd_error.arguments.few
+
+      access:
+        owner:
+          <<: *cmd_error
+          description: t@bot.cmd_error.access.owner

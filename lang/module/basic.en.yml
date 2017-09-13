@@ -1,0 +1,31 @@
+en:
+  mod:
+    basic:
+      status:
+        owner: "\U0001F464 Bot Owner"
+        no_owner: "Bot owner is not specified"
+        uptime: "\u23F1 Process Uptime"
+        present: "\U0001F310 Present In"
+        presence: "%{srv} servers, %{chan} channels"
+
+      help:
+        shutdown:
+          usage: "%{cmd}"
+          desc: "Disconnects the websocket and stops the bot process."
+        root_eval:
+          usage: "%{cmd} <code>"
+          desc: "Evaluates Ruby code in bot application's root context."
+        status:
+          usage: "%{cmd}"
+          desc: "Displays current bot status and information."
+        help:
+          usage: "%{cmd} [command]"
+          desc: >
+            If command name is specified displays help for that command,
+            otherwise displays the list of all available commands.
+        emoji:
+          usage: "%{cmd} <emoji...>"
+          desc: "Displays full-size images of specified emoji. Works only with custom emoji."
+        avatar:
+          usage: "%{cmd} <user...>"
+          desc: "Displays full-sized avatars of specified users."

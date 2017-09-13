@@ -1,0 +1,32 @@
+en:
+  mod:
+    search:
+      gsearch:
+        $: "\U0001F50E Google Search"
+        wait: "Searching, please wait..."
+        empty: "No results have been found"
+        result: "Results for: **%{query}**"
+        footer: "Showing page %{index}/%{total}"
+
+      gimages:
+        $: "\U0001F50E Google Images"
+        wait: "Searching, please wait..."
+        empty: "No results have been found"
+        result: "Results for: **%{query}**"
+        footer: "Showing image %{index}/%{total}"
+
+      ytsearch:
+        wait: "\U0001F50E **YouTube** Searching, please wait..."
+        empty: "\U0001F50E **YouTube** No results have been found"
+        result: "\U0001F50E **YouTube** %{url} *(%{index}/%{total})*"
+
+      help:
+        gsearch:
+          usage: "%{cmd} <query>"
+          desc: "Google Search"
+        gimages:
+          usage: "%{cmd} <query>"
+          desc: "Google Images"
+        gsearch:
+          usage: "%{cmd} <query>"
+          desc: "YouTube Search"

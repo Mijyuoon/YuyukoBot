@@ -1,0 +1,49 @@
+en:
+  time:
+    formats:
+      iso8601: '%Y-%m-%d %H:%M:%S %:z'
+  date:
+    formats:
+      longspan: '%d %~d, %h %~h, %m %~m, %s %~s'
+
+  duration:
+    second:
+      one: second
+      other: seconds
+    minute:
+      one: minute
+      other: minutes
+    hour:
+      one: hour
+      other: hours
+    day:
+      one: day
+      other: days
+    week:
+      one: week
+      other: weeks
+
+  bot:
+    cmd_error:
+      $: "\u274C %{cmd}: Error occurred"
+      invalid: "Command not found"
+      arguments:
+        many: "Too many command arguments specified"
+        few: "Too few command arguments specified"
+      syntax: "Syntax error:\n%{err}"
+      access:
+        owner: "Only the owner is permitted to run this command"
+
+    cmd_info:
+      $: "\u2139 %{cmd}: Command help"
+      no_desc: "No description provided"
+      usage: "Usage info"
+      no_usage: "No usage info provided"
+      alias: "Other names"
+      no_alias: "Command has no other names"
+      invalid: "Command '%{cmd}' not found"
+      list: "\u2139 Available commands"
+
+  errors:
+    bad_quotes: "Mismatched quote marks or backticks"
+    arg_parse: "Failed to parse argument #%{index}"

@@ -7,11 +7,11 @@ module Basic
 
   @root_eval_context = Object.new
 
-  event(:ready) do |ev|
-    prefix = Yuyuko.cfg('core.bot.command_prefix')
+  event(:ready) do |evt|
+    prefix = evt.bot.command_prefix
     prefix = prefix.first if prefix.is_a?(Array)
 
-    ev.bot.change_status(game: "#{prefix}help for help")
+    evt.bot.change_status(game: "#{prefix}help for help")
   end
 
   command_group(:Admin)

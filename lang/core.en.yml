@@ -4,7 +4,7 @@ en:
       iso8601: '%Y-%m-%d %H:%M:%S %:z'
   date:
     formats:
-      longspan: '%d %~d, %h %~h, %m %~m, %s %~s'
+      longspan: '%td %~td, %h %~h, %m %~m, %s %~s'
 
   duration:
     second:

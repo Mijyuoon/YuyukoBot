@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'ruby-duration'
-
 module Basic
   extend Yuyuko::CommandContainer
 

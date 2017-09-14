@@ -2,19 +2,20 @@
 
 module Yuyuko
   module CommandContainer
-    def event(name, filter = {}, &block)
+    Event = Struct.new(:type, :key, :filter, :block)
+    Command = Struct.new(:names, :attributes, :block)
+
+    def event(type, key = nil, **filter, &block)
       raise ArgumentError, 'No callback block provided' if block.nil?
-      raise ArgumentError, 'Filter must be a hash' unless filter.is_a?(Hash)
-      raise ArgumentError, "Invalid event name: #{name}" unless MijDiscord::Bot::EVENTS[name]
+      raise ArgumentError, "Invalid event type: #{type}" unless MijDiscord::Bot::EVENTS[type]
 
       @event_defs ||= []
-      @event_defs << {name: name, filter: filter, block: block}
+      @event_defs << Event.new(type, key, filter, block)
       nil
     end
 
-    def command(names, attributes = {}, &block)
+    def command(names, **attributes, &block)
       raise ArgumentError, 'No callback block provided' if block.nil?
-      raise ArgumentError, 'Attributes must be a hash' unless attributes.is_a?(Hash)
 
       names = [names] unless names.is_a?(Array)
       names = names.map {|x| Bot.parse_command_name(x) }
@@ -22,7 +23,7 @@ module Yuyuko
       attributes[:group] = @command_group
 
       @command_defs ||= []
-      @command_defs << {names: names, attributes: attributes, block: block}
+      @command_defs << Command.new(names, attributes, block)
       nil
     end
 
@@ -81,9 +82,8 @@ module Yuyuko
       @command_defs[@command_alias[name] || name]
     end
 
-    def add_command(names, attributes = {}, &block)
+    def add_command(names, **attributes, &block)
       raise ArgumentError, 'No callback block provided' if block.nil?
-      raise ArgumentError, 'Attributes must be a hash' unless attributes.is_a?(Hash)
 
       names = [names] unless names.is_a?(Array)
       name, aliases = names.first, names.drop(1)
@@ -107,13 +107,13 @@ module Yuyuko
     def include!(object)
       if object.respond_to?(:event_defs)
         object.event_defs&.each do |evt|
-          add_event(evt[:name], evt[:filter], &evt[:block])
+          add_event(evt.type, evt.key, **evt.filter, &evt.block)
         end
       end
 
       if object.respond_to?(:command_defs)
         object.command_defs&.each do |cmd|
-          add_command(cmd[:names], cmd[:attributes], &cmd[:block])
+          add_command(cmd.names, **cmd.attributes, &cmd.block)
         end
       end
 

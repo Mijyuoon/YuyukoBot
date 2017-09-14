@@ -114,6 +114,10 @@ module MijDiscord::Events
       nil
     end
 
+    def callbacks
+      @callbacks.values
+    end
+
     def trigger(event_args, block_args = nil)
       event = @klass.new(*event_args)
 

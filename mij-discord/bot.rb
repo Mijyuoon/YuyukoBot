@@ -266,6 +266,12 @@ module MijDiscord
       nil
     end
 
+    def events(type)
+      raise ArgumentError, "Invalid event type: #{type}" unless EVENTS[type]
+
+      @event_dispatchers[type]&.callbacks || []
+    end
+
     def ignore_user(user)
       @ignored_ids << user.to_id
       nil

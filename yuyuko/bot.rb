@@ -59,10 +59,10 @@ module Yuyuko
     attr_reader :command_prefix
 
     def initialize(
-        client_id:, token:, command_prefix:, login_type: :bot, bot_name: nil,
+        client_id:, token:, command_prefix:, type: :bot, name: nil,
         shard_id: nil, num_shards: nil, ignore_bots: false)
       super(
-        client_id: client_id, token: token, login_type: login_type, bot_name: bot_name,
+        client_id: client_id, token: token, type: type, name: name,
         shard_id: shard_id, num_shards: num_shards, ignore_bots: ignore_bots)
 
       @command_prefix = command_prefix.dup

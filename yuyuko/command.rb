@@ -49,7 +49,7 @@ module Yuyuko
         raise Yuyuko::Errors::ArgumentError, kind: :many
       end
 
-      if attributes.owner_only && (owners = Yuyuko.cfg('core.bot.owner_id'))
+      if attributes.owner_only && (owners = Yuyuko.cfg("core.bots.#{event.bot.name}.owner_id"))
         raise Yuyuko::Errors::AccessError, kind: :owner unless owners.include?(event.user.id)
       end
 

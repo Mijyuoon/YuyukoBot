@@ -45,7 +45,7 @@ module Basic
   command(:status,
   usage_info: 'mod.basic.help.status.usage',
   description: 'mod.basic.help.status.desc') do |evt|
-    owner = Yuyuko.cfg('core.bot.owner_id') || []
+    owner = Yuyuko.cfg("core.bots.#{evt.bot.name}.owner_id") || []
     owner = owner.empty? ? nil : owner.map {|x| "<@#{x}>" }.join(', ')
 
     uptime = Yuyuko.lc(Duration.new(Time.now - @bot_startup_time), format: :longspan)

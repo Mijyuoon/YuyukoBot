@@ -89,16 +89,16 @@ def yuyuko_init(name = 'default')
   return nil unless Yuyuko.cfg("core.bots.#{name}")
 
   config = {
+    type: "core.bots.#{name}.login.type",
     client_id: "core.bots.#{name}.login.client_id",
     token: "core.bots.#{name}.login.token",
-    login_type: "core.bots.#{name}.login.type",
     ignore_bots: "core.bots.#{name}.ignore_bots",
     shard_id: "core.bots.#{name}.shard.id",
     num_shards: "core.bots.#{name}.shard.count",
     command_prefix: "core.bots.#{name}.command_prefix",
   }.map {|k,v| [k, Yuyuko.cfg(v)] }.reject! {|_,v| v.nil? }
 
-  yuyuko = Yuyuko::Bot.new(**config.to_h)
+  yuyuko = Yuyuko::Bot.new(name: name, **config.to_h)
   Yuyuko::Modules.modules.each {|m| yuyuko.include!(m) }
 
   yuyuko

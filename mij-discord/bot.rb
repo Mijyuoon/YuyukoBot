@@ -57,7 +57,11 @@ module MijDiscord
       offline: :offline
     }.freeze
 
-    attr_accessor :name
+    attr_reader :name
+
+    attr_reader :type
+
+    attr_reader :client_id
 
     attr_reader :token
 
@@ -68,8 +72,8 @@ module MijDiscord
     attr_reader :cache
 
     def initialize(
-        client_id:, token:, login_type: :bot, bot_name: nil, shard_id: nil, num_shards: nil, ignore_bots: false)
-      @client_id, @type, @name = client_id.to_id, login_type, bot_name || ''
+        client_id:, token:, type: :bot, name: nil, shard_id: nil, num_shards: nil, ignore_bots: false)
+      @client_id, @type, @name = client_id.to_id, type, name || ''
 
       @token = case @type
         when :bot then "Bot #{token}"

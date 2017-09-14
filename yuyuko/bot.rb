@@ -143,7 +143,7 @@ module Yuyuko
         thread = Thread.current
 
         @callback_threads << thread
-        thread[:mij_discord] = "yu-cmd-#{command.object_id}"
+        thread[:mij_discord] = "yu-cmd-#{command.name(true)}"
 
         begin
           case (mode = command.attributes.arg_mode)

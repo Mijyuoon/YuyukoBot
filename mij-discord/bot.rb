@@ -71,8 +71,8 @@ module MijDiscord
 
     attr_reader :cache
 
-    def initialize(
-        client_id:, token:, type: :bot, name: nil, shard_id: nil, num_shards: nil, ignore_bots: false)
+    def initialize(client_id:, token:, type: :bot, name: nil,
+    shard_id: nil, num_shards: nil, ignore_bots: false, ignore_self: true)
       @client_id, @type, @name = client_id.to_id, type, name || ''
 
       @token = case @type
@@ -86,14 +86,11 @@ module MijDiscord
       @shard_key = [shard_id, num_shards] if num_shards
       @gateway = MijDiscord::Core::Gateway.new(self, @token, @shard_key)
 
-      @ignore_bots = ignore_bots
-      @ignored_ids = Set.new
+      @ignore_bots, @ignore_self, @ignored_ids = ignore_bots, ignore_self, Set.new
 
       @unavailable_servers = 0
 
       @event_dispatchers = {}
-
-      @ignored_ids.add(@client_id)
     end
 
     def connect(async = true)
@@ -278,7 +275,7 @@ module MijDiscord
     end
 
     def ignored_user?(user)
-      @ignored_ids.include?(user.to_id)
+      @ignore_bots && user.to_id == @client_id || @ignored_ids.include?(user.to_id)
     end
 
     def change_status(status: nil, game: nil, url: nil)

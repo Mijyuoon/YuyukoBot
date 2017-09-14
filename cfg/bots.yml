@@ -1,6 +1,8 @@
 core:
   bots:
     default:
+      ignore_bots: no
+      ignore_self: yes
       owner_id:
         - 000000000000000000
       command_prefix: "."

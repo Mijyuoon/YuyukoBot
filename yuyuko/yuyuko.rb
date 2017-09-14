@@ -93,6 +93,7 @@ def yuyuko_init(name = 'default')
     client_id: "core.bots.#{name}.login.client_id",
     token: "core.bots.#{name}.login.token",
     ignore_bots: "core.bots.#{name}.ignore_bots",
+    ignore_self: "core.bots.#{name}.ignore_self",
     shard_id: "core.bots.#{name}.shard.id",
     num_shards: "core.bots.#{name}.shard.count",
     command_prefix: "core.bots.#{name}.command_prefix",

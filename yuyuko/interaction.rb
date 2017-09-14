@@ -95,8 +95,7 @@ module Yuyuko::Interaction
         yield(current_page = pages)
       end
 
-      buttons.add(Yuyuko::Interaction::BUTTON_STOP) { buttons.cancel }
-      buttons.add(Yuyuko::Interaction::BUTTON_CROSS) { self.delete } if delete
+      buttons.add(Yuyuko::Interaction::BUTTON_STOP) { self.delete } if delete
 
       buttons.auto_cancel(cancel) if cancel
 

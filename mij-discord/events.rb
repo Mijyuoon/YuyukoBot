@@ -2,28 +2,29 @@
 
 module MijDiscord::Events
   class EventBase
+    FilterMatch = Struct.new(:field, :on, :cmp)
+
     def initialize(*args)
       # Nothing
     end
 
-    def trigger?(filter)
-      flist = self.class.event_filters
+    def trigger?(params)
+      filters = self.class.event_filters
 
-      result = flist.map do |fk, fds|
-        next true unless filter.has_key?(fk)
-        key = filter[fk]
+      result = params.map do |key, param|
+        next true unless filters.has_key?(key)
 
-        check = fds.map do |fd|
-          on, field, cmp = fd[:on], fd[:field], fd[:cmp]
+        check = filters[key].map do |match|
+          on, field, cmp = match.on, match.field, match.cmp
 
-          match = case on
+          is_match = case on
             when Array
-              on.reduce(false) {|a,x| a || trigger_match?(x, key) }
+              on.reduce(false) {|a,x| a || trigger_match?(x, param) }
             else
-              trigger_match?(on, key)
+              trigger_match?(on, param)
           end
 
-          next false unless match
+          next false unless is_match
 
           value = case field
             when Array
@@ -34,13 +35,13 @@ module MijDiscord::Events
 
           case cmp
             when :eql?
-              value == key
+              value == param
             when :neq?
-              value != key
+              value != param
             when :case
-              key === value
+              param === value
             when Proc
-              cmp.call(value, key)
+              cmp.call(value, param)
             else
               false
           end
@@ -73,7 +74,7 @@ module MijDiscord::Events
 
         # @event_filters ||= superclass&.event_filters&.dup || {}
         filter = (@event_filters[key] ||= [])
-        filter << {field: field, on: on, cmp: block || cmp}
+        filter << FilterMatch.new(field, on, block || cmp)
       end
 
       def delegate_method(*names, to:)
@@ -92,32 +93,32 @@ module MijDiscord::Events
   end
 
   class DispatcherBase
-    Callback = Struct.new(:block, :filter)
+    Callback = Struct.new(:key, :block, :filter)
 
     def initialize(klass)
       raise ArgumentError, 'Class must inherit from EventBase' unless klass < EventBase
 
-      @klass, @callbacks = klass, []
+      @klass, @callbacks = klass, {}
     end
 
-    def add_callback(filter = {}, &block)
+    def add_callback(key = nil, **filter, &block)
       raise ArgumentError, 'No callback block provided' if block.nil?
-      raise ArgumentError, 'Filter must be a hash' unless filter.is_a?(Hash)
 
-      @callbacks << Callback.new(block, filter)
-      block.object_id
+      key = block.object_id if key.nil?
+      @callbacks[key] = Callback.new(key, block, filter)
+      key
     end
 
-    def remove_callback(id)
-      @callbacks.reject! {|x| x.block.object_id == id }
+    def remove_callback(key)
+      @callbacks.delete(key)
       nil
     end
 
     def trigger(event_args, block_args = nil)
       event = @klass.new(*event_args)
 
-      @callbacks.each do |cb|
-        execute_callback(cb.block, event, block_args) if event.trigger?(cb.filter)
+      @callbacks.each do |_, cb|
+        execute_callback(cb, event, block_args) if event.trigger?(cb.filter)
       end
     end
 

@@ -40,15 +40,15 @@ module MijDiscord::Events
       @bot, @threads = bot, []
     end
 
-    def execute_callback(block, event, _)
+    def execute_callback(callback, event, _)
       Thread.new do
         thread = Thread.current
 
         @threads << thread
-        thread[:mij_discord] = "event-#{block.object_id}"
+        thread[:mij_discord] = "event-#{callback.key}"
 
         begin
-          block.call(event, block.object_id)
+          callback.block.call(event, callback.key)
         rescue LocalJumpError
           # Allow premature return from callback block
         rescue => exc

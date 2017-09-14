@@ -219,15 +219,17 @@ module MijDiscord
 
     def parse_invite_code(invite)
       case invite
-        when MijDiscord::Data::Invite then invite.code
+        when %r[(\w+)] then $1
         when %r[(?:https?://)?discord\.gg/(\w+)]i then $1
         when %r[https?://discordapp\.com/invite/(\w+)]i then $1
-        when %r[(\w+)] then $1
+        when MijDiscord::Data::Invite then invite.code
         else raise ArgumentError, 'Invalid invite format'
       end
     end
 
     def parse_mention(mention, server_id = nil)
+      gateway_check
+
       case mention
         when /<@!?(\d+)>/
           server_id ? member(server_id, $1) : user($1)
@@ -250,17 +252,17 @@ module MijDiscord
       end
     end
 
-    def add_event(name, filter = {}, &block)
-      raise ArgumentError, "Invalid event name: #{name}" unless EVENTS[name]
+    def add_event(type, key = nil, **filter, &block)
+      raise ArgumentError, "Invalid event type: #{type}" unless EVENTS[type]
 
-      event = (@event_dispatchers[name] ||= MijDiscord::Events::EventDispatcher.new(EVENTS[name], self))
-      event.add_callback(filter, &block)
+      event = (@event_dispatchers[type] ||= MijDiscord::Events::EventDispatcher.new(EVENTS[type], self))
+      event.add_callback(key, filter, &block)
     end
 
-    def remove_event(name, key)
-      raise ArgumentError, "Invalid event name: #{name}" unless EVENTS[name]
+    def remove_event(type, key)
+      raise ArgumentError, "Invalid event type: #{type}" unless EVENTS[type]
 
-      @event_dispatchers[name]&.remove_callback(key)
+      @event_dispatchers[type]&.remove_callback(key)
       nil
     end
 

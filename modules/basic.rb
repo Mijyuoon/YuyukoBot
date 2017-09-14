@@ -7,7 +7,7 @@ module Basic
 
   @root_eval_context = Object.new
 
-  event(:ready) do |evt|
+  event(:ready, :status_help) do |evt|
     prefix = evt.bot.command_prefix
     prefix = prefix.first if prefix.is_a?(Array)
 

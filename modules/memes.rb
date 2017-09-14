@@ -43,7 +43,7 @@ module Memes
     output
   end
 
-  event(:create_message) do |evt|
+  event(:create_message, :meme_butcher) do |evt|
     maxdist = Yuyuko.cfg('mod.memes.butcher_distance')
     strings = Yuyuko.cfg('mod.memes.butcher_strings')
 

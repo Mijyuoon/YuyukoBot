@@ -275,7 +275,7 @@ module MijDiscord
     end
 
     def ignored_user?(user)
-      @ignore_bots && user.to_id == @client_id || @ignored_ids.include?(user.to_id)
+      @ignore_self && user.to_id == @client_id || @ignored_ids.include?(user.to_id)
     end
 
     def change_status(status: nil, game: nil, url: nil)

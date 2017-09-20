@@ -65,43 +65,60 @@ module Yuyuko
   end
 end
 
-def yuyuko_load(*params)
-  params.each do |kind|
-    case kind
-      when :loc
-        Yuyuko.locale = I18n.default_locale
-        I18n.load_path |= Dir['lang/*.yml']
-        I18n.load_path |= Dir['lang/module/*.yml']
-        I18n.backend.reload!
-      when :cfg
-        config = Yuyuko.config = {}
-        Dir['cfg/*.yml'].each {|fi| config.deep_merge!(YAML::load_file(fi)) }
-        Dir['cfg/module/*.yml'].each {|fi| config.deep_merge!(YAML::load_file(fi)) }
-      when :mod
-        Dir['modules/*.rb'].each {|fi| Yuyuko::Modules.module_eval(File.read(fi), fi) }
-      when :all
-        yuyuko_load(:loc, :cfg, :mod)
+module YuyukoInit
+  CONFIG_ROOT = 'core.bots.*'
+  CONFIG_ITEMS = {
+    type: 'login.type',
+    client_id: 'login.client_id',
+    token: 'login.token',
+    ignore_bots: 'ignore_bots',
+    ignore_self: 'ignore_self',
+    shard_id: 'shard.id',
+    num_shards: 'shard.count',
+    command_prefix: 'command_prefix',
+  }.freeze
+
+  @instances = {}
+
+  class << self
+    def reload_locale
+      Yuyuko.locale = I18n.default_locale
+      I18n.load_path |= Dir['lang/*.yml']
+      I18n.load_path |= Dir['lang/module/*.yml']
+      I18n.backend.reload!
+    end
+
+    def reload_config
+      config = Yuyuko.config = {}
+      Dir['cfg/*.yml'].each {|fi| config.deep_merge!(YAML::load_file(fi)) }
+      Dir['cfg/module/*.yml'].each {|fi| config.deep_merge!(YAML::load_file(fi)) }
+    end
+
+    def reload_modules
+      Dir['modules/*.rb'].each {|fi| Yuyuko::Modules.module_eval(File.read(fi), fi) }
+      Yuyuko::Modules.modules.each {|m| @instances.each_value {|x| x.include!(m) } }
+    end
+
+    def get_config(name)
+      basepath = CONFIG_ROOT.gsub('*', name)
+      raise ArgumentError, "Cannot find bot configuration '#{name}'" unless Yuyuko.cfg(basepath)
+
+      CONFIG_ITEMS.map {|k,v| [k, Yuyuko.cfg("#{basepath}.#{v}")] }.reject! {|_,v| v.nil? }.to_h
+    end
+
+    def start_instance(name, async:)
+      return if @instances[name]
+
+      config = get_config(name)
+      inst = Yuyuko::Bot.new(name: name, **config)
+      Yuyuko::Modules.modules.each {|m| inst.include!(m) }
+
+      @instances[name] = inst
+      inst.connect(async)
     end
   end
+
+  reload_locale
+  reload_config
+  reload_modules
 end
-
-def yuyuko_init(name = 'default')
-  return nil unless Yuyuko.cfg("core.bots.#{name}")
-
-  config = {
-    type: "core.bots.#{name}.login.type",
-    client_id: "core.bots.#{name}.login.client_id",
-    token: "core.bots.#{name}.login.token",
-    ignore_bots: "core.bots.#{name}.ignore_bots",
-    ignore_self: "core.bots.#{name}.ignore_self",
-    shard_id: "core.bots.#{name}.shard.id",
-    num_shards: "core.bots.#{name}.shard.count",
-    command_prefix: "core.bots.#{name}.command_prefix",
-  }.map {|k,v| [k, Yuyuko.cfg(v)] }.reject! {|_,v| v.nil? }
-
-  yuyuko = Yuyuko::Bot.new(name: name, **config.to_h)
-  Yuyuko::Modules.modules.each {|m| yuyuko.include!(m) }
-
-  yuyuko
-end
-

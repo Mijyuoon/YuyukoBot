@@ -100,14 +100,17 @@ module MijDiscord
     def connect(async = true)
       @gateway.run_async
       @gateway.sync unless async
+      nil
     end
 
     def sync
       @gateway.sync
+      nil
     end
 
     def disconnect(no_sync = false)
       @gateway.stop(no_sync)
+      nil
     end
 
     alias_method :shutdown, :disconnect

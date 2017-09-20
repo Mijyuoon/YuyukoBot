@@ -13,6 +13,8 @@ module MijDiscord::Events
 
   class Heartbeat < Generic; end
 
+  class Connect < Generic; end
+
   class Disconnect < Generic; end
 
   class Exception < Generic

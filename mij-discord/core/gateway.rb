@@ -119,7 +119,7 @@ module MijDiscord::Core
       @ws_thread = Thread.new do
         Thread.current[:mij_discord] = 'websocket'
 
-        reconn_delay = 1.0
+        @reconnect_delay = 1.0
 
         loop do
           ws_connect
@@ -127,10 +127,11 @@ module MijDiscord::Core
           break unless @should_reconnect
 
           if @instant_reconnect
+            @reconnect_delay = 1.0
             @instant_reconnect = false
           else
-            sleep(reconn_delay)
-            reconn_delay = [reconn_delay * 1.5, 120].min
+            sleep(@reconnect_delay)
+            @reconnect_delay = [@reconnect_delay * 1.5, 120].min
           end
         end
 
@@ -351,6 +352,8 @@ module MijDiscord::Core
     end
 
     def ws_mainloop
+      @bot.handle_dispatch(:CONNECT, nil)
+
       @socket.write(@handshake.to_s)
 
       frame = WebSocket::Frame::Incoming::Client.new
@@ -442,7 +445,7 @@ module MijDiscord::Core
       @socket&.close
       @socket = nil
 
-      ws_close(false)
+      @bot.handle_dispatch(:DISCONNECT, nil)
     end
 
     def handle_message(msg)
@@ -480,7 +483,7 @@ module MijDiscord::Core
           MijDiscord::LOGGER.info('Gateway') { "Received READY packet (user: #{data['user']['id']})" }
           MijDiscord::LOGGER.info('Gateway') { "Using gateway protocol version #{data['v']}, requested #{GATEWAY_VERSION}" }
         when :RESUMED
-          # LOG: Resuming session
+          MijDiscord::LOGGER.info('Gateway') { 'Received session resume confirmation' }
           return
       end
 

@@ -4,6 +4,7 @@ module Basic
   extend Yuyuko::CommandContainer
 
   @bot_startup_time = Time.now
+  @socket_startup_time = Time.now
 
   @root_eval_context = Object.new
 
@@ -12,6 +13,10 @@ module Basic
     prefix = prefix.first if prefix.is_a?(Array)
 
     evt.bot.change_status(game: "#{prefix}help for help")
+  end
+
+  event(:connect, :socket_uptime) do
+    @socket_startup_time = Time.now
   end
 
   command_group(:Admin)
@@ -48,10 +53,14 @@ module Basic
     owner = Yuyuko.cfg("core.bots.#{evt.bot.name}.owner_id") || []
     owner = owner.empty? ? nil : owner.map {|x| "<@#{x}>" }.join(', ')
 
-    uptime = Yuyuko.lc(Duration.new(Time.now - @bot_startup_time), format: :longspan)
+    bot_uptime = Yuyuko.lc(Duration.new(Time.now - @bot_startup_time), format: :longspan)
+    ws_uptime = Yuyuko.lc(Duration.new(Time.now - @socket_startup_time), format: :longspan)
+
+    servers = Yuyuko.tr('mod.basic.status.presence.servers', count: evt.bot.servers.length)
+    channels = Yuyuko.tr('mod.basic.status.presence.channels', count: evt.bot.channels.length)
 
     evt.channel.send_embed('mod.basic.embed.status',
-      creator: owner, uptime: uptime, srv: evt.bot.servers.length, chan: evt.bot.channels.length)
+      creator: owner, bot_uptime: bot_uptime, ws_uptime: ws_uptime, servers: servers, channels: channels)
   end
 
   command(:help,

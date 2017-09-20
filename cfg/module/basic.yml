@@ -10,10 +10,12 @@ mod:
         fields:
           - name: t@mod.basic.status.owner
             value: s@creator|mod.basic.status.no_owner
-          - name: t@mod.basic.status.uptime
-            value: s@uptime
-          - name: t@mod.basic.status.present
-            value: t@mod.basic.status.presence
+          - name: t@mod.basic.status.uptime.bot
+            value: s@bot_uptime
+          - name: t@mod.basic.status.uptime.ws
+            value: s@ws_uptime
+          - name: t@mod.basic.status.presence.$
+            value: t@mod.basic.status.presence.value
 
       help:
         list:

@@ -4,9 +4,18 @@ en:
       status:
         owner: "\U0001F464 Bot Owner"
         no_owner: "Bot owner is not specified"
-        uptime: "\u23F1 Process Uptime"
-        present: "\U0001F310 Present In"
-        presence: "%{srv} servers, %{chan} channels"
+        uptime:
+          bot: "\u23F1 Process Uptime"
+          ws: "\u23F1 Websocket Uptime"
+        presence:
+          $: "\U0001F310 Currently Present"
+          value: "On %{servers}, %{channels}"
+          servers:
+            one: "one server"
+            other: "%{count} servers"
+          channels:
+            one: "one channel"
+            other: "%{count} channels"
 
       help:
         shutdown:
@@ -24,8 +33,8 @@ en:
             If command name is specified displays help for that command,
             otherwise displays the list of all available commands.
         emoji:
-          usage: "%{cmd} <emoji...>"
+          usage: "%{cmd} <emoji> [emoji] ..."
           desc: "Displays full-size images of specified emoji. Works only with custom emoji."
         avatar:
-          usage: "%{cmd} <user...>"
+          usage: "%{cmd} <user> [user] ..."
           desc: "Displays full-sized avatars of specified users."

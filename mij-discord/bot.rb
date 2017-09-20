@@ -5,6 +5,7 @@ module MijDiscord
     EVENTS = {
       ready: MijDiscord::Events::Ready,
       heartbeat: MijDiscord::Events::Heartbeat,
+      connect: MijDiscord::Events::Connect,
       disconnect: MijDiscord::Events::Disconnect,
       exception: MijDiscord::Events::Exception,
 
@@ -333,6 +334,12 @@ module MijDiscord
       end
 
       case type
+        when :CONNECT
+          trigger_event(:connect, self)
+
+        when :DISCONNECT
+          trigger_event(:disconnect, self)
+
         when :READY
           @cache.reset
 

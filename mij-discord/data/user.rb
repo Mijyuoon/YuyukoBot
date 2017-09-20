@@ -133,8 +133,41 @@ module MijDiscord::Data
   end
 
   class Profile < User
-    def current_bot?
-      true
+    attr_reader :mfa_enabled
+    alias_method :mfa_enabled?, :mfa_enabled
+
+    def update_data(data)
+      super(data)
+
+      @mfa_enabled = !!data['mfa_enabled']
     end
+
+    def set_username(name)
+      response = MijDiscord::Core::API::User.update_profile(@bot.token, name, nil)
+      update_data(JSON.parse(response))
+      nil
+    end
+
+    alias_method :username=, :set_username
+    alias_method :set_name, :set_username
+    alias_method :name=, :set_username
+
+    def set_avatar(data, format = :png)
+      if data.is_a?(String)
+        data = "data:image/#{format};base64,#{data}"
+      elsif data.respond_to?(:read)
+        data.binmode if data.respond_to?(:binmode)
+        data = Base64.strict_encode64(data.read)
+        data = "data:image/#{format};base64,#{data}"
+      else
+        raise ArgumentError, 'Invalid avatar data provided'
+      end
+
+      response = MijDiscord::Core::API::User.update_profile(@bot.token, @username, data)
+      update_data(JSON.parse(response))
+      nil
+    end
+
+    alias_method :avatar=, :set_avatar
   end
 end

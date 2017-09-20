@@ -31,6 +31,19 @@ module MijDiscord::Events
     end
   end
 
+  class UpdateUser < Generic
+    attr_reader :user
+
+    filter_match(:user, field: [:user, :name], on: [String, Regexp], cmp: :case)
+    filter_match(:user, on: :id_obj, cmp: :eql?)
+
+    def initialize(bot, user)
+      super(bot)
+
+      @user = user
+    end
+  end
+
   class EventDispatcher < MijDiscord::Events::DispatcherBase
     attr_reader :threads
 

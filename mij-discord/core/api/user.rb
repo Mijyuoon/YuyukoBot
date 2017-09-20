@@ -42,13 +42,13 @@ module MijDiscord::Core::API::User
 
     # Update user data
     # https://discordapp.com/developers/docs/resources/user#modify-current-user
-    def update_profile(token, email, password, new_username, avatar, new_password = nil)
+    def update_profile(token, username, avatar)
       MijDiscord::Core::API.request(
         :users_me,
         nil,
         :patch,
         "#{MijDiscord::Core::API::APIBASE_URL}/users/@me",
-        { avatar: avatar, email: email, new_password: new_password, password: password, username: new_username }.to_json,
+        { avatar: avatar, username: username }.reject {|_,v| v.nil? }.to_json,
         Authorization: token,
         content_type: :json
       )

@@ -8,6 +8,7 @@ module MijDiscord
       disconnect: MijDiscord::Events::Disconnect,
       exception: MijDiscord::Events::Exception,
 
+      update_user: MijDiscord::Events::UpdateUser,
       create_server: MijDiscord::Events::CreateServer,
       update_server: MijDiscord::Events::UpdateServer,
       delete_server: MijDiscord::Events::DeleteServer,
@@ -66,6 +67,8 @@ module MijDiscord
     attr_reader :token
 
     attr_reader :shard_key
+
+    attr_reader :profile
 
     attr_reader :gateway
 
@@ -514,6 +517,10 @@ module MijDiscord
             # Ignoring the channel we can't access
             # Why is this even sent? :S
           end
+
+        when :USER_UPDATE
+          user = @cache.put_user(data, update: true)
+          trigger_event(:update_user, self, user)
 
         when :PRESENCE_UPDATE
           return unless data['guild_id']

@@ -16,14 +16,15 @@ require_relative 'yuyuko/ext/duration'
 require_relative 'yuyuko/ext/mij-discord'
 require_relative 'yuyuko/yuyuko'
 
-options = {}
+options = {bot: 'default'}
+
 OptionParser.new do |op|
   op.banner = 'Usage: yuyuko.rb [options]'
   op.separator 'Options:'
 
   log_levels = [:unknown, :fatal, :error, :warn, :info, :debug]
   op.on('-l', '--log LEVEL', String, log_levels,
-  "Sets the logging level #{log_levels.join(', ')}") do |log|
+  "Sets the logging level (#{log_levels.join(', ')})") do |log|
     MijDiscord::LOGGER.level = log
   end
 
@@ -33,9 +34,4 @@ OptionParser.new do |op|
   end
 end.parse!
 
-yuyuko_load(:all)
-
-bot = options[:bot] || 'default'
-$yuyuko = yuyuko_init(bot)
-
-$yuyuko&.connect(false)
+YuyukoInit.start_instance(options[:bot], async: false)

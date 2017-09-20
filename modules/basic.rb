@@ -50,17 +50,21 @@ module Basic
   command(:status,
   usage_info: 'mod.basic.help.status.usage',
   description: 'mod.basic.help.status.desc') do |evt|
+    sep = Yuyuko.tr('list_separator')
+
     owner = Yuyuko.cfg("core.bots.#{evt.bot.name}.owner_id") || []
-    owner = owner.empty? ? nil : owner.map {|x| "<@#{x}>" }.join(', ')
+    owner = owner.empty? ? nil : owner.map {|x| "<@#{x}>" }.join(sep)
 
     bot_uptime = Yuyuko.lc(Duration.new(Time.now - @bot_startup_time), format: :longspan)
     ws_uptime = Yuyuko.lc(Duration.new(Time.now - @socket_startup_time), format: :longspan)
 
-    servers = Yuyuko.tr('mod.basic.status.presence.servers', count: evt.bot.servers.length)
-    channels = Yuyuko.tr('mod.basic.status.presence.channels', count: evt.bot.channels.length)
+    presence = [
+      Yuyuko.tr('mod.basic.status.presence.servers', count: evt.bot.servers.length),
+      Yuyuko.tr('mod.basic.status.presence.channels', count: evt.bot.channels.length),
+    ].join(sep)
 
     evt.channel.send_embed('mod.basic.embed.status',
-      creator: owner, bot_uptime: bot_uptime, ws_uptime: ws_uptime, servers: servers, channels: channels)
+      creator: owner, bot_uptime: bot_uptime, ws_uptime: ws_uptime, presence: presence)
   end
 
   command(:help,

@@ -23,6 +23,8 @@ en:
       one: week
       other: weeks
 
+  list_separator: ", "
+
   bot:
     cmd_error:
       $: "\u274C %{cmd}: Error occurred"

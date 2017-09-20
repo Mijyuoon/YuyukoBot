@@ -8,8 +8,7 @@ en:
           bot: "\u23F1 Process Uptime"
           ws: "\u23F1 Websocket Uptime"
         presence:
-          $: "\U0001F310 Currently Present"
-          value: "On %{servers}, %{channels}"
+          $: "\U0001F310 Present On"
           servers:
             one: "one server"
             other: "%{count} servers"

@@ -15,7 +15,7 @@ mod:
           - name: t@mod.basic.status.uptime.ws
             value: s@ws_uptime
           - name: t@mod.basic.status.presence.$
-            value: t@mod.basic.status.presence.value
+            value: s@presence
 
       help:
         list:

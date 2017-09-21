@@ -42,6 +42,8 @@ module Basic
       "#{exc.message} (#{exc.class})"
     end
 
+    next if result == 'nil'
+
     evt.channel.send_message(text: "```\n#{result}\n```")
   end
 

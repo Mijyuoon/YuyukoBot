@@ -44,7 +44,7 @@ module MijDiscord::Data
       raise ArgumentError, 'Cannot create member with no server' unless server || data['guild_id']
       @server = server || @bot.servers(data['guild_id'])
 
-      @joined_at = Time.parse(data['joined_at']) if data['joined_at']
+      @joined_at = Time.parse(data['joined_at']).utc if data['joined_at']
 
       update_data(data)
     end

@@ -29,7 +29,7 @@ module MijDiscord::Data
     def initialize(data)
       @title, @description, @url = data['title'], data['description'], data['url']
       @color = ColorRGB.new(data['color']) if data['color']
-      @timestamp = Time.parse(data['timestamp']) if data['timestamp']
+      @timestamp = Time.parse(data['timestamp']).utc if data['timestamp']
 
       @footer = EmbedFooter.new(data['footer']) if data['footer']
       @thumbnail = EmbedMedia.new(data['thumbnail']) if data['thumbnail']

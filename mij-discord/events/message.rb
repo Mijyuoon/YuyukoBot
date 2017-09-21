@@ -91,7 +91,7 @@ module MijDiscord::Events
     def initialize(bot, data)
       super(bot)
 
-      @timestamp = Time.at(data['timestamp'].to_i)
+      @timestamp = Time.at(data['timestamp'].to_i).utc
       @channel = @bot.channel(data['channel_id'])
 
       @user = if @channel.pm?

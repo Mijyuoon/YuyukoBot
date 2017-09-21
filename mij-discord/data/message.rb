@@ -73,8 +73,8 @@ module MijDiscord::Data
       @pinned = data.fetch('pinned', @pinned)
       @tts = data.fetch('tts', @tts)
 
-      @timestamp = Time.parse(data['timestamp']) if data['timestamp']
-      @edited_timestamp = Time.parse(data['edited_timestamp']) if data['edited_timestamp']
+      @timestamp = Time.parse(data['timestamp']).utc if data['timestamp']
+      @edited_timestamp = Time.parse(data['edited_timestamp']).utc if data['edited_timestamp']
       @edited = !!@edited_timestamp
 
       @mention_everyone = !!data['mention_everyone']

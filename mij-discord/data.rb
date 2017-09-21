@@ -21,7 +21,7 @@ module MijDiscord::Data
 
     def creation_time
       ms = (@id >> 22) + DISCORD_EPOCH
-      Time.at(ms / 1000.0)
+      Time.at(ms / 1000.0).utc
     end
 
     def self.synthesize(time)

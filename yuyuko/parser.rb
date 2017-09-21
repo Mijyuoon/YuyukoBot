@@ -86,7 +86,7 @@ module Yuyuko::Parser
         when :rational
           Rational(item)
         when :time
-          Time.parse(item)
+          Time.parse(item).utc
         when :bool
           case item.downcase
             when 'true', 'yes', 'on' then true

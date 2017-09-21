@@ -222,12 +222,16 @@ module MijDiscord::Data
     end
 
     def send_message(text: '', embed: nil, tts: false)
+      raise MijDiscord::Core::Errors::MessageTooLong if text.length > 2000
+
       response = MijDiscord::Core::API::Channel.create_message(@bot.token, @id,
         text, tts, embed&.to_h)
       @cache.put_message(JSON.parse(response))
     end
 
     def send_file(file, caption: '', tts: false)
+      raise MijDiscord::Core::Errors::MessageTooLong if caption.length > 2000
+
       response = MijDiscord::Core::API::Channel.upload_file(@bot.token, @id, file, caption, tts)
       @cache.put_message(JSON.parse(response))
     end

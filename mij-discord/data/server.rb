@@ -144,7 +144,7 @@ module MijDiscord::Data
     end
 
     def channels
-      @cache.channels
+      @cache.list_channels
     end
 
     def channel(id)

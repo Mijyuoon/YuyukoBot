@@ -54,8 +54,12 @@ module MijDiscord::Cache
         raise
       end
 
-      channel = @channels[id] = MijDiscord::Data::Channel.new(JSON.parse(response), @bot, server)
+      channel = @channels[id] = MijDiscord::Data::Channel.create(JSON.parse(response), @bot, server)
       @pm_channels[channel.recipient.id] = channel if channel.pm?
+
+      if (server = channel.server)
+        server.cache.put_channel!(channel)
+      end
 
       channel
     end
@@ -66,7 +70,7 @@ module MijDiscord::Cache
       return nil if local
 
       response = MijDiscord::Core::API::User.create_pm(@bot.token, id)
-      channel = MijDiscord::Data::Channel.new(JSON.parse(response), @bot, nil)
+      channel = MijDiscord::Data::Channel.create(JSON.parse(response), @bot, nil)
 
       @channels[channel.id] = @pm_channels[id] = channel
     end
@@ -102,8 +106,12 @@ module MijDiscord::Cache
         return @channels[id]
       end
 
-      channel = @channels[id] = MijDiscord::Data::Channel.new(data, @bot, server)
+      channel = @channels[id] = MijDiscord::Data::Channel.create(data, @bot, server)
       @pm_channels[channel.recipient.id] = channel if channel.pm?
+
+      if (server = channel.server)
+        server.cache.put_channel!(channel)
+      end
 
       channel
     end
@@ -123,9 +131,14 @@ module MijDiscord::Cache
     end
 
     def remove_channel(key)
-      chan = @channels.delete(key&.to_id)
-      @pm_channels.delete(chan.recipient.id) if chan&.pm?
-      chan
+      channel = @channels.delete(key&.to_id)
+      @pm_channels.delete(channel.recipient.id) if channel&.pm?
+
+      if (server = channel&.server)
+        server.cache.remove_channel(key)
+      end
+
+      channel
     end
 
     def remove_user(key)
@@ -141,8 +154,7 @@ module MijDiscord::Cache
     end
 
     def reset
-      # @members, @roles, @channels = {}, {}, {}
-      @members, @roles = {}, {}
+      @channels, @members, @roles = {}, {}, {}
     end
 
     def list_members
@@ -154,8 +166,7 @@ module MijDiscord::Cache
     end
 
     def list_channels
-      # @channels.values
-      @bot.cache.channels.select! {|x| x.server == @server }
+      @channels.values
     end
 
     def get_member(key, local: false)
@@ -182,12 +193,13 @@ module MijDiscord::Cache
     end
 
     def get_channel(key, local: false)
-      # id = key.to_id
-      # return @channels[id] if @channels.has_key?(id)
-      #
-      # @channels[id] = @bot.cache.get_channel(key, @server, local: local)
-      chan = @bot.cache.get_channel(key, @server, local: local)
-      chan&.server == @server ? chan : nil
+      id = key&.to_id
+      return @channels[id] if @channels.has_key?(id)
+
+      channel = @bot.cache.get_channel(key, local: local)
+      return nil unless channel&.server == @server
+
+      @channels[channel.id] = channel
     end
 
     def put_member(data, update: false)
@@ -211,14 +223,12 @@ module MijDiscord::Cache
     end
 
     def put_channel(data, update: false)
-      # id = data['id'].to_i
-      # if @channels.has_key?(id)
-      #   @channels[id].update_data(data) if update
-      #   return @channels[id]
-      # end
-      #
-      # @channels[id] = @bot.cache.put_channel(data, @server, update: update)
-      @bot.cache.put_channel(data, @server, update: update)
+      channel = @bot.cache.put_channel(data, @server, update: update)
+      @channels[channel.id] = channel
+    end
+
+    def put_channel!(channel)
+      @channels[channel.id] = channel
     end
 
     def remove_member(key)
@@ -230,10 +240,10 @@ module MijDiscord::Cache
     end
 
     def remove_channel(key)
-      # id = key.to_id
-      # @channels.remove(id)
-      # @bot.cache.remove_channel(id)
-      @bot.cache.remove_channel(key)
+      channel = @channels.delete(key&.to_id)
+      @bot.cache.remove_channel(key) if channel
+
+      channel
     end
   end
 
@@ -263,7 +273,7 @@ module MijDiscord::Cache
       end
 
       message = @messages.store(id, MijDiscord::Data::Message.new(JSON.parse(response), @bot))
-      @messages.shift if @messages.length > @max_messages
+      @messages.shift while @messages.length > @max_messages
 
       message
     end
@@ -276,7 +286,7 @@ module MijDiscord::Cache
       end
 
       message = @messages.store(id, MijDiscord::Data::Message.new(data, @bot))
-      @messages.shift if @messages.length > @max_messages
+      @messages.shift while @messages.length > @max_messages
 
       message
     end

@@ -16,13 +16,17 @@ module MijDiscord::Core::API::Channel
 
     # Update a channel's data
     # https://discordapp.com/developers/docs/resources/channel#modify-channel
-    def update(token, channel_id, name, position, topic, bitrate, user_limit, nsfw, reason = nil)
+    def update(token, channel_id, name, topic, nsfw, parent_id, position, bitrate, user_limit, reason = nil)
       MijDiscord::Core::API.request(
         :channels_cid,
         channel_id,
         :patch,
         "#{MijDiscord::Core::API::APIBASE_URL}/channels/#{channel_id}",
-        { name: name, position: position, topic: topic, bitrate: bitrate, user_limit: user_limit, nsfw: nsfw }.reject{|_, v| v.nil? }.to_json,
+        {
+          name: name, topic: topic, nsfw: nsfw,
+          parent_id: parent_id, position: position,
+          bitrate: bitrate, user_limit: user_limit
+        }.reject{|_, v| v.nil? }.to_json,
         Authorization: token,
         content_type: :json,
         'X-Audit-Log-Reason': reason

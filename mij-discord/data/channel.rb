@@ -7,11 +7,7 @@ module MijDiscord::Data
       1 => :pm,
       2 => :voice,
       3 => :group,
-
-      :text  => 0,
-      :pm    => 1,
-      :voice => 2,
-      :group => 3,
+      4 => :category,
     }.freeze
 
     include IDObject
@@ -23,24 +19,10 @@ module MijDiscord::Data
     attr_reader :server
 
     attr_reader :type
-    # attr_reader :type_id
-
-    attr_reader :owner
-    # attr_reader :owner_id
-
-    attr_reader :topic
-
-    attr_reader :nsfw
-    alias_method :nsfw?, :nsfw
-
-    attr_reader :recipients
-
-    attr_reader :bitrate
-
-    attr_reader :user_limit
-    alias_method :limit, :user_limit
 
     attr_reader :position
+
+    attr_reader :parent_id
 
     attr_reader :permission_overwrites
     alias_method :overwrites, :permission_overwrites
@@ -56,22 +38,19 @@ module MijDiscord::Data
       @id = data['id'].to_i
       update_data(data)
 
-      if private?
-        @recipients = []
-        if data['recipients']
-          data['recipients'].each do |rd|
-            user = @bot.cache.put_user(rd)
-            @recipients << Recipient.new(user, self, @bot)
-          end
-        end
-        if pm?
-          @name = @recipients.first.username
+      @server = server || @bot.server(data['guild_id']) unless private?
+    end
+
+    def self.create(data, bot, server)
+      case TYPES[data['type']]
+        when :text, :pm, :group
+          TextChannel.new(data, bot, server)
+        when :voice
+          VoiceChannel.new(data, bot, server)
+        when :category
+          ChannelCategory.new(data, bot, server)
         else
-          @owner = @bot.user(data['owner_id'].to_i)
-          # @owner_id = data['owner_id'].to_i
-        end
-      else
-        @server = server || @bot.server(data['guild_id'].to_i)
+          raise RuntimeError, 'Broken channel object!'
       end
     end
 
@@ -80,11 +59,8 @@ module MijDiscord::Data
       @type_id = data.fetch('type', @type_id || 0)
       @type = TYPES[@type_id]
 
-      @topic = data.fetch('topic', @topic)
-      @nsfw = data.fetch('nsfw', @nsfw)
-      @bitrate = data.fetch('bitrate', @bitrate)
-      @user_limit = data.fetch('user_limit', @user_limit)
       @position = data.fetch('position', @position)
+      @parent_id = data.fetch('parent_id', @parent_id).to_i
 
       if (perms = data['permission_overwrites'])
         @permission_overwrites = {}
@@ -93,23 +69,6 @@ module MijDiscord::Data
           id = elem['id'].to_i
           @permission_overwrites[id] = Overwrite.from_hash(elem)
         end
-      end
-    end
-
-    def update_recipient(add: nil, remove: nil)
-      return unless group?
-
-      unless add.nil?
-        user = @bot.cache.put_user(add)
-        recipient = Recipient.new(user, self, @bot)
-        @recipients << recipient
-        return recipient
-      end
-
-      unless remove.nil?
-        id = remove['id'].to_i
-        recipient = @recipients.find {|x| x.id == id }
-        return @recipients.delete(recipient)
       end
     end
 
@@ -127,12 +86,18 @@ module MijDiscord::Data
       @type == :pm
     end
 
+    alias_method :dm?, :pm?
+
     def voice?
       @type == :voice
     end
 
     def group?
       @type == :group
+    end
+
+    def category?
+      @type == :category
     end
 
     def private?
@@ -145,8 +110,8 @@ module MijDiscord::Data
 
     alias_method :default?, :default_channel?
 
-    def recipient
-      @recipients.first if pm?
+    def parent
+      @parent_id ? @server.cache.get_channel(@parent_id) : nil
     end
 
     def member_overwrites
@@ -158,30 +123,12 @@ module MijDiscord::Data
     end
 
     def set_name(name, reason = nil)
+      return if private?
+
       set_options(reason, name: name)
     end
 
     alias_method :name=, :set_name
-
-    def set_topic(topic, reason = nil)
-      set_options(reason, topic: topic)
-    end
-
-    alias_method :topic=, :set_topic
-
-    def set_bitrate(rate, reason = nil)
-      set_options(reason, bitrate: rate)
-    end
-
-    alias_method :bitrate=, :set_bitrate
-
-    def set_user_limit(limit, reason = nil)
-      set_options(reason, user_limit: limit)
-    end
-
-    alias_method :user_limit=, :set_user_limit
-    alias_method :set_limit, :set_user_limit
-    alias_method :limit=, :set_user_limit
 
     def set_position(position, reason = nil)
       set_options(reason, position: position)
@@ -189,16 +136,15 @@ module MijDiscord::Data
 
     alias_method :position=, :set_position
 
-    def set_nsfw(nsfw, reason = nil)
-      set_options(reason, nsfw: nsfw)
+    def set_parent(parent, reason = nil)
+      set_options(reason, parent: parent)
     end
 
-    alias_method :nsfw=, :set_nsfw
-
-    def set_options(reason = nil, name: nil, topic: nil, position: nil, bitrate: nil, user_limit: nil, nsfw: nil)
+    def set_options(reason = nil, name: nil, topic: nil, nsfw: nil,
+    parent: nil, position: nil, bitrate: nil, user_limit: nil)
       response = MijDiscord::Core::API::Channel.update(@bot.token, @id,
-        name, position, topic, bitrate, user_limit, nsfw, reason)
-      @bot.cache.put_channel(JSON.parse(response), update: true)
+        name, topic, nsfw,parent&.to_id, position, bitrate, user_limit, reason)
+      @server.cache.put_channel(JSON.parse(response), update: true)
     end
 
     def define_overwrite(object, reason = nil, allow: 0, deny: 0)
@@ -220,6 +166,93 @@ module MijDiscord::Data
         object.to_id, reason)
       nil
     end
+
+    # TODO: get_users
+    # TODO: get_webhooks
+
+    def delete(reason = nil)
+      MijDiscord::Core::API::Channel.delete(@bot.token, @id, reason)
+      @server.cache.remove_channel(@id)
+    end
+
+    def inspect
+      %(<Channel id=#{@id} server=#{@server.id} name="#{@name}" type=#{@type}>)
+    end
+  end
+
+  class TextChannel < Channel
+    attr_reader :topic
+
+    attr_reader :owner_id
+
+    attr_reader :nsfw
+    alias_method :nsfw?, :nsfw
+
+    attr_reader :recipients
+
+    def initialize(data, bot, server)
+      super(data, bot, server)
+
+      if private?
+        @recipients = []
+        if data['recipients']
+          data['recipients'].each do |rd|
+            user = @bot.cache.put_user(rd)
+            @recipients << Recipient.new(user, self, @bot)
+          end
+        end
+
+        if pm?
+          @name = @recipients.first.username
+        else
+          @owner_id = data['owner_id'].to_i
+        end
+      end
+    end
+
+    def update_data(data)
+      super(data)
+
+      @topic = data.fetch('topic', @topic)
+      @nsfw = data.fetch('nsfw', @nsfw)
+    end
+
+    def update_recipient(add: nil, remove: nil)
+      return unless group?
+
+      unless add.nil?
+        user = @bot.cache.put_user(add)
+        recipient = Recipient.new(user, self, @bot)
+        @recipients << recipient
+        return recipient
+      end
+
+      unless remove.nil?
+        id = remove['id'].to_i
+        recipient = @recipients.find {|x| x.id == id }
+        return @recipients.delete(recipient)
+      end
+    end
+
+    def owner
+      @owner_id ? @bot.cache.get_user(@owner_id) : nil
+    end
+
+    def set_topic(topic, reason = nil)
+      return unless text?
+
+      set_options(reason, topic: topic)
+    end
+
+    alias_method :topic=, :set_topic
+
+    def set_nsfw(nsfw, reason = nil)
+      return unless text?
+
+      set_options(reason, nsfw: nsfw)
+    end
+
+    alias_method :nsfw=, :set_nsfw
 
     def send_message(text: '', embed: nil, tts: false)
       raise MijDiscord::Core::Errors::MessageTooLong if text.length > 2000
@@ -248,7 +281,6 @@ module MijDiscord::Data
     def message_history(amount, before: nil, after: nil, around: nil)
       response = MijDiscord::Core::API::Channel.messages(@bot.token, @id,
         amount, before&.to_id, after&.to_id, around&.to_id)
-      # JSON.parse(response).map {|m| @cache.put_message(m) }
       JSON.parse(response).map {|m| Message.new(m, @bot) }
     end
 
@@ -256,7 +288,6 @@ module MijDiscord::Data
 
     def pinned_messages
       response = MijDiscord::Core::API::Channel.pinned_messages(@bot.token, @id)
-      # JSON.parse(response).map {|m| @cache.put_message(m) }
       JSON.parse(response).map {|m| Message.new(m, @bot) }
     end
 
@@ -324,17 +355,53 @@ module MijDiscord::Data
       MijDiscord::Core::API::Channel.leave_group(@bot.token, @id)
       nil
     end
+  end
 
-    # TODO: get_users
-    # TODO: get_webhooks
+  class VoiceChannel < Channel
+    attr_reader :bitrate
 
-    def delete(reason = nil)
-      MijDiscord::Core::API::Channel.delete(@bot.token, @id, reason)
-      @bot.cache.remove_channel(@id)
+    attr_reader :user_limit
+    alias_method :limit, :user_limit
+
+    def initialize(data, bot, server)
+      super(data, bot, server)
+
+
     end
 
-    def inspect
-      %(<Channel id=#{@id} server=#{@server.inspect} name="#{@name}" type=#{@type} topic="#{@topic}">)
+    def update_data(data)
+      super(data)
+
+      @bitrate = data.fetch('bitrate', @bitrate)
+      @user_limit = data.fetch('user_limit', @user_limit)
+    end
+
+    def set_bitrate(rate, reason = nil)
+      set_options(reason, bitrate: rate)
+    end
+
+    alias_method :bitrate=, :set_bitrate
+
+    def set_user_limit(limit, reason = nil)
+      set_options(reason, user_limit: limit)
+    end
+
+    alias_method :user_limit=, :set_user_limit
+    alias_method :set_limit, :set_user_limit
+    alias_method :limit=, :set_user_limit
+  end
+
+  class ChannelCategory < Channel
+    def initialize(data, bot, server)
+      super(data, bot, server)
+    end
+
+    def update_data(data)
+      super(data)
+    end
+
+    def channels
+      @server.channels.select! {|x| x.parent_id == @id }
     end
   end
 end

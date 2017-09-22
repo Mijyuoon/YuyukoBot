@@ -20,15 +20,17 @@ module Search
   def self.google_search(query, offset: 0)
     params = URI.encode_www_form({hl: 'en', q: query, start: offset})
 
-    connection = Net::HTTP.new('www.google.ru', 443)
+    connection = Net::HTTP.new('www.google.co.uk', 443)
     connection.use_ssl = true
 
     header = Yuyuko.cfg('mod.search.http_header')
     request = connection.get("/search?#{params}", header)
     html = Nokogiri::HTML.parse(request.body)
 
-    results = html.css('#rso div.rc > h3.r > a').zip(html.css('#rso div.rc > div.s span.st'))
-    results.map {|x,y| {u: x[:href], h: x.content, s: y.content} }
+    html.css('#rso div.rc').map do |x|
+      link, summ = x.css('h3.r > a').first, x.css('div.s span.st').first
+      (link && summ) ? {u: link[:href], h: link.content, s: summ.content} : nil
+    end.reject!(&:nil?)
   rescue
     []
   end
@@ -36,14 +38,14 @@ module Search
   def self.google_images(query)
     params = URI.encode_www_form({hl: 'en', tbm: 'isch', q: query})
 
-    connection = Net::HTTP.new('www.google.ru', 443)
+    connection = Net::HTTP.new('www.google.co.uk', 443)
     connection.use_ssl = true
 
     header = Yuyuko.cfg('mod.search.http_header')
     request = connection.get("/search?#{params}", header)
     html = Nokogiri::HTML.parse(request.body)
 
-    html.css('div.rg_meta').map {|x| JSON.parse(x.content)['ou'] }
+    html.css('div.rg_meta').map! {|x| JSON.parse(x.content)['ou'] }
   rescue
     []
   end
@@ -58,10 +60,10 @@ module Search
     request = connection.get("/results?#{params}", header)
     html = Nokogiri::HTML.parse(request.body)
 
-    html.css('#img-preload > img').map do |x|
+    html.css('#img-preload > img').map! do |x|
       url = x[:src].match(%r(/vi/([\w-]+)/))
       url ? "https://youtu.be/#{url[1]}" : nil
-    end.reject {|x| x.nil? }.uniq
+    end.reject!(&:nil?).uniq
   rescue
     []
   end

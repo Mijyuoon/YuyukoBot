@@ -38,9 +38,9 @@ module MijDiscord::Data
     end
 
     def update_data(data)
-      @username = data['username']
-      @discriminator = data['discriminator']
-      @avatar_id = data['avatar']
+      @username = data.fetch('username', @username)
+      @discriminator = data.fetch('discriminator', @discriminator)
+      @avatar_id = data.fetch('avatar', @avatar_id)
     end
 
     def update_presence(presence)

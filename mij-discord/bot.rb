@@ -536,7 +536,7 @@ module MijDiscord
           return unless data['guild_id']
 
           server = @cache.get_server(data['guild_id'])
-          member = server.cache.put_member(data)
+          member = server.cache.put_member(data, update: true)
 
           old_game = member.game
           member.update_presence(data)

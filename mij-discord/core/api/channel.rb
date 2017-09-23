@@ -26,7 +26,7 @@ module MijDiscord::Core::API::Channel
           name: name, topic: topic, nsfw: nsfw,
           parent_id: parent_id, position: position,
           bitrate: bitrate, user_limit: user_limit
-        }.reject{|_, v| v.nil? }.to_json,
+        }.delete_if {|_, v| v.nil? }.to_json,
         Authorization: token,
         content_type: :json,
         'X-Audit-Log-Reason': reason

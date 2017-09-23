@@ -296,7 +296,7 @@ module MijDiscord::Data
     def delete_messages(messages)
       two_weeks = Time.now - (14 * 86_400)
       min_snowflake = IDObject.synthesize(two_weeks)
-      ids = messages.map(&:to_id).reject! {|m| m < min_snowflake }
+      ids = messages.map(&:to_id).delete_if {|m| m < min_snowflake }
 
       MijDiscord::Core::API::Channel.bulk_delete_messages(@bot.token, @id, ids)
       ids.each {|m| @cache.remove_message(m) }

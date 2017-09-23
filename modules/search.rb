@@ -30,7 +30,7 @@ module Search
     html.css('#rso div.rc').map do |x|
       link, summ = x.css('h3.r > a').first, x.css('div.s span.st').first
       (link && summ) ? {u: link[:href], h: link.content, s: summ.content} : nil
-    end.reject!(&:nil?)
+    end.delete_if(&:nil?)
   rescue
     []
   end
@@ -63,7 +63,7 @@ module Search
     html.css('#img-preload > img').map do |x|
       url = x[:src].match(%r{/vi/([\w-]+)/})
       url ? "https://youtu.be/#{url[1]}" : nil
-    end.reject!(&:nil?).uniq
+    end.delete_if(&:nil?).uniq
   rescue
     []
   end

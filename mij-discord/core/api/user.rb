@@ -48,7 +48,7 @@ module MijDiscord::Core::API::User
         nil,
         :patch,
         "#{MijDiscord::Core::API::APIBASE_URL}/users/@me",
-        { avatar: avatar, username: username }.reject {|_,v| v.nil? }.to_json,
+        { avatar: avatar, username: username }.delete_if {|_,v| v.nil? }.to_json,
         Authorization: token,
         content_type: :json
       )

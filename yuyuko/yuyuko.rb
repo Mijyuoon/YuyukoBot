@@ -103,7 +103,7 @@ module YuyukoInit
       basepath = CONFIG_ROOT.gsub('*', name)
       raise ArgumentError, "Cannot find bot configuration '#{name}'" unless Yuyuko.cfg(basepath)
 
-      CONFIG_ITEMS.map {|k,v| [k, Yuyuko.cfg("#{basepath}.#{v}")] }.reject! {|_,v| v.nil? }.to_h
+      CONFIG_ITEMS.map {|k,v| [k, Yuyuko.cfg("#{basepath}.#{v}")] }.delete_if {|_,v| v.nil? }.to_h
     end
 
     def start_instance(name, async:)

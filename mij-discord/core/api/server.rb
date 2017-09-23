@@ -36,7 +36,10 @@ module MijDiscord::Core::API::Server
         server_id,
         :patch,
         "#{MijDiscord::Core::API::APIBASE_URL}/guilds/#{server_id}",
-        { name: name, region: region, icon: icon, afk_channel_id: afk_channel_id, afk_timeout: afk_timeout }.reject {|_, v| v.nil? }.to_json,
+        {
+          name: name, region: region, icon: icon,
+          afk_channel_id: afk_channel_id, afk_timeout: afk_timeout
+        }.delete_if {|_, v| v.nil? }.to_json,
         Authorization: token,
         content_type: :json,
         'X-Audit-Log-Reason': reason
@@ -143,7 +146,7 @@ module MijDiscord::Core::API::Server
         server_id,
         :patch,
         "#{MijDiscord::Core::API::APIBASE_URL}/guilds/#{server_id}/members/#{user_id}",
-        { roles: roles, nick: nick, mute: mute, deaf: deaf, channel_id: channel_id }.reject {|_,v| v.nil? }.to_json,
+        { roles: roles, nick: nick, mute: mute, deaf: deaf, channel_id: channel_id }.delete_if {|_,v| v.nil? }.to_json,
         Authorization: token,
         content_type: :json,
         'X-Audit-Log-Reason': reason
@@ -244,7 +247,10 @@ module MijDiscord::Core::API::Server
         server_id,
         :patch,
         "#{MijDiscord::Core::API::APIBASE_URL}/guilds/#{server_id}/roles/#{role_id}",
-        { color: color, name: name, hoist: hoist, mentionable: mentionable, permissions: permissions }.reject{|_, v| v.nil? }.to_json,
+        {
+          color: color, name: name, hoist: hoist,
+          mentionable: mentionable, permissions: permissions
+        }.delete_if {|_, v| v.nil? }.to_json,
         Authorization: token,
         content_type: :json,
         'X-Audit-Log-Reason': reason

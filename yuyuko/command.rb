@@ -1,15 +1,15 @@
 module Yuyuko
   class CommandAttributes
-    attr_reader :group
+    attr_accessor :group
 
-    attr_reader :arg_count
-    attr_reader :arg_mode
-    attr_reader :arg_types
+    attr_accessor :arg_count
+    attr_accessor :arg_mode
+    attr_accessor :arg_types
 
-    attr_reader :usage_info
-    attr_reader :description
+    attr_accessor :usage_info
+    attr_accessor :description
 
-    attr_reader :owner_only
+    attr_accessor :owner_only
 
     def initialize(hash)
       @group = hash[:group] || :Generic

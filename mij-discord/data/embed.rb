@@ -2,6 +2,8 @@
 
 module MijDiscord::Data
   class Embed
+    attr_reader :type
+
     attr_reader :title
 
     attr_reader :description
@@ -27,7 +29,9 @@ module MijDiscord::Data
     attr_reader :fields
 
     def initialize(data)
-      @title, @description, @url = data['title'], data['description'], data['url']
+      @type, @url = data['type'], data['url']
+      @title, @description = data['title'], data['description']
+
       @color = ColorRGB.new(data['color']) if data['color']
       @timestamp = Time.parse(data['timestamp']).utc if data['timestamp']
 

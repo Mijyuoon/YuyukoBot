@@ -61,7 +61,7 @@ module Search
     html = Nokogiri::HTML.parse(request.body)
 
     html.css('#img-preload > img').map do |x|
-      url = x[:src].match(%r(/vi/([\w-]+)/))
+      url = x[:src].match(%r{/vi/([\w-]+)/})
       url ? "https://youtu.be/#{url[1]}" : nil
     end.reject!(&:nil?).uniq
   rescue

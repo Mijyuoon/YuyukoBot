@@ -2,7 +2,7 @@ require 'yaml'
 require 'i18n'
 require 'optparse'
 require 'deep_merge'
-require './mij-discord'
+require 'mij-discord'
 
 module Yuyuko
   require_relative 'yuyuko/errors'

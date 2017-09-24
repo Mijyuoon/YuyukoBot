@@ -1,3 +1,4 @@
 /.idea
 /misc_scripts
 /cfg/bots_*.yml
+/modules/my_*.rb

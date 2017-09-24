@@ -1,3 +1,5 @@
+source 'https://rubygems.org'
+
 # Master dependencies
 gem 'mij-discord', '~> 1.0'
 gem 'deep_merge', '~> 1.1'

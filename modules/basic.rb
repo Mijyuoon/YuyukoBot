@@ -73,21 +73,24 @@ module Basic
   arg_count: 0..1, arg_types: [:string],
   usage_info: 'mod.basic.help.help.usage',
   description: 'mod.basic.help.help.desc') do |evt, name|
+    sep = Yuyuko.tr('list_separator')
+
     if name
       if (cmd = evt.bot.command(name))
         name, desc, usage = cmd.name(true), cmd.attributes.description, cmd.attributes.usage_info
 
         aliases = cmd.aliases(true).map {|x| "`#{x}`" }.sort!
-        aliases = aliases.empty? ? nil : aliases.join(', ')
+        aliases = aliases.empty? ? nil : aliases.join(sep)
 
         evt.channel.send_embed('mod.basic.embed.help.single', cmd: name, desc: desc, usage: usage, alias: aliases)
       else
         evt.channel.send_embed('mod.basic.embed.help.invalid', cmd: name)
       end
     else
-      commands = evt.bot.commands.group_by {|x| x.attributes.group }.sort
+      commands = evt.bot.commands.reject {|x| x.attributes.hide_help }
+      commands = commands.group_by {|x| x.attributes.group }.sort
       commands = commands.map do |key, grp|
-        grp = grp.map {|x| "`#{x.name(true)}`" }.sort!.join(', ')
+        grp = grp.map {|x| "`#{x.name(true)}`" }.sort!.join(sep)
         "**#{key}**: #{grp}"
       end.join("\n")
 

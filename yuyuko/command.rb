@@ -6,6 +6,7 @@ module Yuyuko
     attr_accessor :arg_mode
     attr_accessor :arg_types
 
+    attr_accessor :hide_help
     attr_accessor :usage_info
     attr_accessor :description
 
@@ -18,6 +19,7 @@ module Yuyuko
       @arg_mode = hash[:arg_mode] || :words
       @arg_types = hash[:arg_types]
 
+      @hide_help = hash[:hide_help]
       @usage_info = hash[:usage_info]
       @description = hash[:description]
 

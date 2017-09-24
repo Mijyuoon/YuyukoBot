@@ -1,6 +1,6 @@
 core:
   bots:
-    default:
+    _example_:
       ignore_bots: no
       ignore_self: yes
       owner_id:
@@ -10,3 +10,6 @@ core:
         type: :bot
         client_id: 000000000000000000
         token: place.your.token.here
+      shard:
+        id: 0
+        count: 1

@@ -20,10 +20,13 @@ module Search
   def self.google_search(query, offset: 0)
     params = URI.encode_www_form({hl: 'en', q: query, start: offset})
 
+    useragent = Yuyuko.cfg('mod.search.user_agent').sample
+    header = Yuyuko.cfg('mod.search.http_header', copy: true)
+    header.deep_merge!('User-Agent' => useragent)
+
     connection = Net::HTTP.new('www.google.co.uk', 443)
     connection.use_ssl = true
 
-    header = Yuyuko.cfg('mod.search.http_header')
     request = connection.get("/search?#{params}", header)
     html = Nokogiri::HTML.parse(request.body)
 
@@ -38,10 +41,13 @@ module Search
   def self.google_images(query)
     params = URI.encode_www_form({hl: 'en', tbm: 'isch', q: query})
 
+    useragent = Yuyuko.cfg('mod.search.user_agent').sample
+    header = Yuyuko.cfg('mod.search.http_header', copy: true)
+    header.deep_merge!('User-Agent' => useragent)
+
     connection = Net::HTTP.new('www.google.co.uk', 443)
     connection.use_ssl = true
 
-    header = Yuyuko.cfg('mod.search.http_header')
     request = connection.get("/search?#{params}", header)
     html = Nokogiri::HTML.parse(request.body)
 
@@ -53,10 +59,13 @@ module Search
   def self.youtube_search(query)
     params = URI.encode_www_form({hl: 'en', search_query: query})
 
+    useragent = Yuyuko.cfg('mod.search.user_agent').sample
+    header = Yuyuko.cfg('mod.search.http_header', copy: true)
+    header.deep_merge!('User-Agent' => useragent)
+
     connection = Net::HTTP.new('www.youtube.com', 443)
     connection.use_ssl = true
 
-    header = Yuyuko.cfg('mod.search.http_header')
     request = connection.get("/results?#{params}", header)
     html = Nokogiri::HTML.parse(request.body)
 

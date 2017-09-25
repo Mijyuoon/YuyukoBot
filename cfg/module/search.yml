@@ -3,8 +3,12 @@ mod:
     search_page_items: 3
     button_cancel_time: 300
 
+    user_agent:
+      - "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.104 Safari/537.36"
+      - "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/54.0"
+
     http_header:
-      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:50.0) Gecko/20100101 Firefox/50.1.0
+      User-Agent: placeholder
 
     embed:
       gsearch:

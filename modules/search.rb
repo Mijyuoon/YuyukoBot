@@ -83,11 +83,13 @@ module Search
   arg_mode: :concat, arg_types: [:string],
   usage_info: 'mod.search.help.gsearch.usage',
   description: 'mod.search.help.gsearch.desc') do |evt, query|
-    message = evt.channel.send_embed('mod.search.embed.gsearch.wait')
+    message = evt.channel.send_embed('mod.search.embed.gsearch.wait',
+     username: evt.user.nickname, usericon: evt.user.avatar_url)
 
     results = google_search(query)
     if results.empty?
-      message.edit_embed('mod.search.embed.gsearch.empty')
+      message.edit_embed('mod.search.embed.gsearch.empty',
+        username: evt.user.nickname, usericon: evt.user.avatar_url)
       next
     end
 
@@ -109,6 +111,7 @@ module Search
       body = "#{label}\n\n#{body.join("\n\n")}"
 
       message.edit_embed('mod.search.embed.gsearch.result',
+        username: evt.user.nickname, usericon: evt.user.avatar_url,
         body: body, index: index, total: results_pages)
     end
   end
@@ -117,11 +120,13 @@ module Search
   arg_mode: :concat, arg_types: [:string],
   usage_info: 'mod.search.help.gimages.usage',
   description: 'mod.search.help.gimages.desc') do |evt, query|
-    message = evt.channel.send_embed('mod.search.embed.gimages.wait')
+    message = evt.channel.send_embed('mod.search.embed.gimages.wait',
+      username: evt.user.nickname, usericon: evt.user.avatar_url)
 
     results = google_images(query)
     if results.empty?
-      message.edit_embed('mod.search.embed.gimages.empty')
+      message.edit_embed('mod.search.embed.gimages.empty',
+        username: evt.user.nickname, usericon: evt.user.avatar_url)
       next
     end
 
@@ -130,6 +135,7 @@ module Search
     message.interactive_paginate(results.length,
     delete: true, cancel: cancel_time, owner: evt.message.author) do |index|
       message.edit_embed('mod.search.embed.gimages.result',
+        username: evt.user.nickname, usericon: evt.user.avatar_url,
         query: query, image: results[index-1], index: index, total: results.length)
     end
   end
@@ -138,11 +144,11 @@ module Search
   arg_mode: :concat, arg_types: [:string],
   usage_info: 'mod.search.help.ytsearch.usage',
   description: 'mod.search.help.ytsearch.desc') do |evt, query|
-    message = evt.channel.send_message(text: Yuyuko.tr('mod.search.ytsearch.wait'))
+    message = evt.channel.send_message(text: Yuyuko.tr('mod.search.ytsearch.wait', user: evt.user))
 
     results = youtube_search(query)
     if results.empty?
-      message.edit(text: Yuyuko.tr('mod.search.ytsearch.empty'))
+      message.edit(text: Yuyuko.tr('mod.search.ytsearch.empty', user: evt.user))
       next
     end
 
@@ -151,7 +157,7 @@ module Search
     message.interactive_paginate(results.length,
     delete: true, cancel: cancel_time, owner: evt.message.author) do |index|
       message.edit(text: Yuyuko.tr('mod.search.ytsearch.result',
-        url: results[index-1], index: index, total: results.length))
+        user: evt.user, url: results[index-1], index: index, total: results.length))
     end
   end
 end

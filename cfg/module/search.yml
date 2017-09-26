@@ -11,34 +11,46 @@ mod:
       User-Agent: placeholder
 
     embed:
+      _gsearch_: &gsearch
+        title: t@mod.search.gsearch.$
+        author:
+          name: s@username
+          icon_url: s@usericon
+
+      _gimages_: &gimages
+        title: t@mod.search.gimages.$
+        author:
+          name: s@username
+          icon_url: s@usericon
+
       gsearch:
         wait:
+          <<: *gsearch
           color: 0x50545C
-          title: t@mod.search.gsearch.$
           description: t@mod.search.gsearch.wait
         empty:
+          <<: *gsearch
           color: 0xFF3333
-          title: t@mod.search.gsearch.$
           description: t@mod.search.gsearch.empty
         result:
+          <<: *gsearch
           color: 0x70C040
-          title: t@mod.search.gsearch.$
           description: s@body
           footer:
             text: t@mod.search.gsearch.footer
 
       gimages:
         wait:
+          <<: *gimages
           color: 0x50545C
-          title: t@mod.search.gimages.$
           description: t@mod.search.gimages.wait
         empty:
+          <<: *gimages
           color: 0xFF3333
-          title: t@mod.search.gimages.$
           description: t@mod.search.gimages.empty
         result:
+          <<: *gimages
           color: 0x70C040
-          title: t@mod.search.gimages.$
           description: t@mod.search.gimages.result
           image:
             width: 300

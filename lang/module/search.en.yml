@@ -23,10 +23,10 @@ en:
       help:
         gsearch:
           usage: "%{cmd} <query>"
-          desc: "Google Search"
+          desc: "Performs Google search for a specified query and displays the results."
         gimages:
           usage: "%{cmd} <query>"
-          desc: "Google Images"
+          desc: "Performs Google Images search for a specified query and displays the results."
         gsearch:
           usage: "%{cmd} <query>"
-          desc: "YouTube Search"
+          desc: "Performs YouTube search for a specified query and displays the results."

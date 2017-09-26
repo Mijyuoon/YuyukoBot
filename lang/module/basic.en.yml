@@ -19,10 +19,10 @@ en:
       help:
         shutdown:
           usage: "%{cmd}"
-          desc: "Disconnects the websocket and stops the bot process."
+          desc: "Disconnects the websocket and stops the bot process. Only usable by bot's owner."
         root_eval:
           usage: "%{cmd} <code>"
-          desc: "Evaluates Ruby code in bot application's root context."
+          desc: "Evaluates Ruby code in bot application's root context. Only usable by bot's owner."
         status:
           usage: "%{cmd}"
           desc: "Displays current bot status and information."

@@ -98,7 +98,7 @@ module Yuyuko::Parser
         when :nil
           NilClass
         when :yaml
-          YAML::load(item)
+          YAML::load(item.gsub(/\A(?:ya?ml)\n/, ''))
         when :member, :role, :emoji
           result = server&.bot&.parse_mention(item, server)
           result.is_a?(DISCORD_TYPES[type]) ? result : nil

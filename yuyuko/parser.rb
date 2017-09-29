@@ -91,7 +91,6 @@ module Yuyuko::Parser
           case item.downcase
             when 'true', 'yes', 'on' then true
             when 'false', 'no', 'off' then false
-            else raise ArgumentError
           end
         when :regexp
           Regexp.new(item)

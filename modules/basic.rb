@@ -62,7 +62,8 @@ module Basic
 
     presence = [
       Yuyuko.tr('mod.basic.status.presence.servers', count: evt.bot.servers.length),
-      Yuyuko.tr('mod.basic.status.presence.channels', count: evt.bot.channels.length),
+      Yuyuko.tr('mod.basic.status.presence.channels',
+        count: evt.bot.channels.select {|x| x.text? || x.voice? }.length),
     ].join(sep)
 
     evt.channel.send_embed('mod.basic.embed.status',

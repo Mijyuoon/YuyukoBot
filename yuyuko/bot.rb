@@ -81,7 +81,7 @@ module Yuyuko
     end
 
     def get_config(path, copy: false)
-      Yuyuko.cfg("core.bots.#{name}.#{path}", copy: copy)
+      Yuyuko.cfg("core.bots.#{auth.name}.#{path}", copy: copy)
     end
 
     def commands

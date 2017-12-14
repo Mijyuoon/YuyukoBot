@@ -54,14 +54,14 @@ module Basic
   description: 'mod.basic.help.status.desc') do |evt|
     sep = Yuyuko.tr('list_separator')
 
-    owner = Yuyuko.cfg("core.bots.#{evt.bot.name}.owner_id") || []
-    owner = owner.empty? ? nil : owner.map {|x| "<@#{x}>" }.join(sep)
+    owner = evt.bot.get_config('owner_id')&.map {|x| "<@#{x}>" }&.join(sep)
 
     bot_uptime = Yuyuko.lc(Duration.new(Time.now - @bot_startup_time), format: :longspan)
     ws_uptime = Yuyuko.lc(Duration.new(Time.now - @socket_startup_time), format: :longspan)
 
     presence = [
-      Yuyuko.tr('mod.basic.status.presence.servers', count: evt.bot.servers.length),
+      Yuyuko.tr('mod.basic.status.presence.servers',
+        count: evt.bot.servers.length),
       Yuyuko.tr('mod.basic.status.presence.channels',
         count: evt.bot.channels.select {|x| x.text? || x.voice? }.length),
     ].join(sep)

@@ -28,3 +28,6 @@ core:
         owner:
           <<: *cmd_error
           description: t@bot.cmd_error.access.owner
+        permissions:
+          <<: *cmd_error
+          description: t@bot.cmd_error.access.permissions

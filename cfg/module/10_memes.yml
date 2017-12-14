@@ -1,0 +1,30 @@
+mod:
+  memes:
+    butcher:
+      distance: 3
+      strings:
+        - in: "thanks yuyuko"
+          out: "you're welcome"
+        - in: "yuyuko kawaii"
+          out: "arigatou :3"
+    thonk:
+      message: "***T H O N K . . .***"
+      emojis:
+        - "<:think_eggplant:301003436202131457>"
+        - "<:thankong:349702642425004032>"
+        - "<:thonkang:349702669910147072>"
+        - "<:think_fish:364554640307781632>"
+        - "<:think_noose2:364555974331203588>"
+        - "<:nosepoke:364556120611618816>"
+        - "<:suicide:364556143046950912>"
+        - "<:think_bread:364556167206404106>"
+        - "<:think_stop:364556207287042049>"
+        - "<:thwonknag:364556224609386496>"
+        - "<:thunkeng:364556235498061834>"
+        - "<:thonkawaii:364556266309287936>"
+        - "<:think_onion:364556335066513418>"
+        - "<:think_turtle:364556350321065986>"
+        - "<:thonkwoke:364556414292852739>"
+        - "<:think_drops:364556467551993856>"
+      samples: 3
+      length: [3, 6]

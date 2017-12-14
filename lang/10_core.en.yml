@@ -27,7 +27,7 @@ en:
 
   bot:
     cmd_error:
-      $: "\u274C %{cmd}: Error occurred"
+      $: "\u274C `%{cmd}`: Error occurred"
       invalid: "Command not found"
       arguments:
         many: "Too many command arguments specified"
@@ -35,15 +35,16 @@ en:
       syntax: "Syntax error:\n%{err}"
       access:
         owner: "Only the owner is permitted to run this command"
+        permissions: "You have insufficient permissions to run this command"
 
     cmd_info:
-      $: "\u2139 %{cmd}: Command help"
+      $: "\u2139 `%{cmd}`: Command help"
       no_desc: "No description provided"
       usage: "Usage info"
       no_usage: "No usage info provided"
       alias: "Other names"
       no_alias: "Command has no other names"
-      invalid: "Command '%{cmd}' not found"
+      invalid: "Command `%{cmd}` not found"
       list: "\u2139 Available commands"
 
   errors:

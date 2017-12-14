@@ -1,0 +1,3 @@
+core:
+  interaction:
+    paginate_timeout: 300

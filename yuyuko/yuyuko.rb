@@ -67,6 +67,7 @@ end
 
 module YuyukoInit
   CONFIG_ROOT = 'core.bots.*'
+
   CONFIG_ITEMS = {
     type: 'login.type',
     client_id: 'login.client_id',
@@ -74,7 +75,7 @@ module YuyukoInit
     ignore_bots: 'ignore_bots',
     ignore_self: 'ignore_self',
     shard_id: 'shard.id',
-    num_shards: 'shard.count',
+    num_shards: 'shard.num',
     command_prefix: 'command_prefix',
   }.freeze
 
@@ -86,17 +87,20 @@ module YuyukoInit
       I18n.load_path |= Dir['lang/*.yml']
       I18n.load_path |= Dir['lang/module/*.yml']
       I18n.backend.reload!
+      nil
     end
 
     def reload_config
       config = Yuyuko.config = {}
       Dir['cfg/*.yml'].each {|fi| config.deep_merge!(YAML::load_file(fi)) }
       Dir['cfg/module/*.yml'].each {|fi| config.deep_merge!(YAML::load_file(fi)) }
+      nil
     end
 
     def reload_modules
       Dir['modules/*.rb'].each {|fi| Yuyuko::Modules.module_eval(File.read(fi), fi) }
       Yuyuko::Modules.modules.each {|m| @instances.each_value {|x| x.include!(m) } }
+      nil
     end
 
     def get_config(name)
@@ -115,6 +119,7 @@ module YuyukoInit
 
       @instances[name] = inst
       inst.connect(async)
+      nil
     end
   end
 

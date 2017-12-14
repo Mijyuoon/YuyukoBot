@@ -12,23 +12,23 @@ module Basic
     prefix = evt.bot.command_prefix
     prefix = prefix.first if prefix.is_a?(Array)
 
-    evt.bot.change_status(game: "#{prefix}help for help")
+    evt.bot.update_presence(game: "#{prefix}help for help")
   end
 
   event(:connect, :socket_uptime) do
     @socket_startup_time = Time.now
   end
 
-  command_group(:Admin)
+  command_group('Admin')
 
-  command(:shutdown,
+  command(%w[shutdown],
   owner_only: true,
   usage_info: 'mod.basic.help.shutdown.usage',
   description: 'mod.basic.help.shutdown.desc') do |evt|
     evt.bot.disconnect
   end
 
-  command(:root_eval,
+  command(%w[root-eval rtev],
   arg_mode: :concat, owner_only: true,
   usage_info: 'mod.basic.help.root_eval.usage',
   description: 'mod.basic.help.root_eval.desc') do |evt, code|
@@ -47,9 +47,9 @@ module Basic
     evt.channel.send_message(text: "```\n#{result}\n```")
   end
 
-  command_group(:Info)
+  command_group('Info')
 
-  command(:status,
+  command(%w[status],
   usage_info: 'mod.basic.help.status.usage',
   description: 'mod.basic.help.status.desc') do |evt|
     sep = Yuyuko.tr('list_separator')
@@ -70,7 +70,7 @@ module Basic
       creator: owner, bot_uptime: bot_uptime, ws_uptime: ws_uptime, presence: presence)
   end
 
-  command(:help,
+  command(%w[help],
   arg_count: 0..1, arg_types: [:string],
   usage_info: 'mod.basic.help.help.usage',
   description: 'mod.basic.help.help.desc') do |evt, name|
@@ -78,44 +78,42 @@ module Basic
 
     if name
       if (cmd = evt.bot.command(name))
-        name, desc, usage = cmd.name(true), cmd.attributes.description, cmd.attributes.usage_info
-
-        aliases = cmd.aliases(true).map {|x| "`#{x}`" }.sort!
+        aliases = cmd.aliases.map {|x| "`#{x}`" }.sort
         aliases = aliases.empty? ? nil : aliases.join(sep)
 
-        evt.channel.send_embed('mod.basic.embed.help.single', cmd: name, desc: desc, usage: usage, alias: aliases)
+        evt.channel.send_embed('mod.basic.embed.help.single',
+          cmd: cmd.name, desc: cmd.description, usage: cmd.usage_info, alias: aliases)
       else
         evt.channel.send_embed('mod.basic.embed.help.invalid', cmd: name)
       end
     else
-      commands = evt.bot.commands.reject {|x| x.attributes.hide_help }
-      commands = commands.group_by {|x| x.attributes.group }.sort
-      commands = commands.map do |key, grp|
-        grp = grp.map {|x| "`#{x.name(true)}`" }.sort!.join(sep)
-        "**#{key}**: #{grp}"
+      commands = evt.bot.commands.group_by(&:group).sort.map do |key, group|
+        "**#{key}**: #{ group.map {|x| "`#{x.name}`" }.sort.join(sep) }"
       end.join("\n")
 
       evt.channel.send_embed('mod.basic.embed.help.list', cmds: commands)
     end
   end
 
-  command_group(:Utils)
+  command_group('Utils')
 
-  command(:emoji,
-  arg_count: 1..-1, arg_types: [:emoji],
+  command(%w[emoji em],
+  arg_count: 1..5, arg_types: [:emoji],
   usage_info: 'mod.basic.help.emoji.usage',
   description: 'mod.basic.help.emoji.desc') do |evt, *emoji|
     emoji.each do |e|
-      evt.channel.send_embed('mod.basic.embed.img_frame', image_url: e.icon_url, name: ":#{e.name}:")
+      evt.channel.send_embed('mod.basic.embed.img_frame',
+        image_url: e.icon_url, name: ":#{e.name}:")
     end
   end
 
-  command(:avatar,
-  arg_count: 1..-1, arg_types: [:user],
+  command(%w[avatar av],
+  arg_count: 1..5, arg_types: [:user],
   usage_info: 'mod.basic.help.avatar.usage',
   description: 'mod.basic.help.avatar.desc') do |evt, *users|
     users.each do |u|
-      evt.channel.send_embed('mod.basic.embed.img_frame', image_url: u.avatar_url, name: u.name)
+      evt.channel.send_embed('mod.basic.embed.img_frame',
+        image_url: u.avatar_url, name: u.name)
     end
   end
 end

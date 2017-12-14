@@ -44,8 +44,8 @@ module Memes
   end
 
   event(:create_message, :meme_butcher) do |evt|
-    maxdist = Yuyuko.cfg('mod.memes.butcher_distance')
-    strings = Yuyuko.cfg('mod.memes.butcher_strings')
+    maxdist = Yuyuko.cfg('mod.memes.butcher.distance')
+    strings = Yuyuko.cfg('mod.memes.butcher.strings')
 
     strings&.each do |str|
       sample, output = str['in'], str['out']
@@ -55,5 +55,23 @@ module Memes
         next
       end
     end
+  end
+
+  command_group('Memes')
+
+  command(%w[thonk],
+  usage_info: 'mod.memes.help.thonk.usage',
+  description: 'mod.memes.help.thonk.desc') do |evt|
+    message = Yuyuko.cfg('mod.memes.thonk.message')
+    emojis = Yuyuko.cfg('mod.memes.thonk.emojis')
+    samples = Yuyuko.cfg('mod.memes.thonk.samples')
+    low, high = Yuyuko.cfg('mod.memes.thonk.length')
+
+    length = high ? (low .. high) : low
+    result = [message, emojis.sample(samples).map {|x| x * rand(length) }]
+    result = result.delete_if(&:nil?).join(' ')
+
+    evt.channel.send_message(text: result)
+    evt.message.delete
   end
 end

@@ -21,8 +21,7 @@ module Search
     params = URI.encode_www_form({hl: 'en', q: query, start: offset})
 
     useragent = Yuyuko.cfg('mod.search.user_agent').sample
-    header = Yuyuko.cfg('mod.search.http_header', copy: true)
-    header.deep_merge!('User-Agent' => useragent)
+    header = { 'User-Agent' => useragent }
 
     connection = Net::HTTP.new('www.google.co.uk', 443)
     connection.use_ssl = true
@@ -42,8 +41,7 @@ module Search
     params = URI.encode_www_form({hl: 'en', tbm: 'isch', q: query})
 
     useragent = Yuyuko.cfg('mod.search.user_agent').sample
-    header = Yuyuko.cfg('mod.search.http_header', copy: true)
-    header.deep_merge!('User-Agent' => useragent)
+    header = { 'User-Agent' => useragent }
 
     connection = Net::HTTP.new('www.google.co.uk', 443)
     connection.use_ssl = true
@@ -60,8 +58,7 @@ module Search
     params = URI.encode_www_form({hl: 'en', search_query: query})
 
     useragent = Yuyuko.cfg('mod.search.user_agent').sample
-    header = Yuyuko.cfg('mod.search.http_header', copy: true)
-    header.deep_merge!('User-Agent' => useragent)
+    header = { 'User-Agent' => useragent }
 
     connection = Net::HTTP.new('www.youtube.com', 443)
     connection.use_ssl = true
@@ -77,9 +74,11 @@ module Search
     []
   end
 
-  command_group(:Search)
+  SEARCH_PAGE_LENGTH = 3
 
-  command([:google, :gsearch],
+  command_group('Search', delay: 5.0)
+
+  command(%w[google gsearch g],
   arg_mode: :concat, arg_types: [:string],
   usage_info: 'mod.search.help.gsearch.usage',
   description: 'mod.search.help.gsearch.desc') do |evt, query|
@@ -93,8 +92,7 @@ module Search
       next
     end
 
-    page_length = Yuyuko.cfg('mod.search.search_page_items')
-    results_pages = (results.length.to_f / page_length).ceil
+    results_pages = (results.length.to_f / SEARCH_PAGE_LENGTH).ceil
 
     results = results.each_with_index.map do |x, i|
       head = sanitize(x[:h], true)
@@ -102,10 +100,8 @@ module Search
       "**#{i+1}. [#{head}](#{x[:u]})**\n#{summ}"
     end
 
-    cancel_time = Yuyuko.cfg('mod.search.button_cancel_time')
-
     message.interactive_paginate(results_pages,
-    delete: true, cancel: cancel_time, owner: evt.message.author) do |index|
+    delete: true, owner: evt.message.author) do |index|
       label = Yuyuko.tr('mod.search.gsearch.result', query: query)
       body = results.slice((index - 1) * page_length, page_length)
       body = "#{label}\n\n#{body.join("\n\n")}"
@@ -116,7 +112,7 @@ module Search
     end
   end
 
-  command([:google_img, :gimages],
+  command(%w[google-img gimages gi],
   arg_mode: :concat, arg_types: [:string],
   usage_info: 'mod.search.help.gimages.usage',
   description: 'mod.search.help.gimages.desc') do |evt, query|
@@ -130,17 +126,15 @@ module Search
       next
     end
 
-    cancel_time = Yuyuko.cfg('mod.search.button_cancel_time')
-
     message.interactive_paginate(results.length,
-    delete: true, cancel: cancel_time, owner: evt.message.author) do |index|
+    delete: true, owner: evt.message.author) do |index|
       message.edit_embed('mod.search.embed.gimages.result',
         username: evt.user.nickname, usericon: evt.user.avatar_url,
         query: query, image: results[index-1], index: index, total: results.length)
     end
   end
 
-  command([:youtube, :ytsearch],
+  command(%w[youtube ytsearch yt],
   arg_mode: :concat, arg_types: [:string],
   usage_info: 'mod.search.help.ytsearch.usage',
   description: 'mod.search.help.ytsearch.desc') do |evt, query|
@@ -152,10 +146,8 @@ module Search
       next
     end
 
-    cancel_time = Yuyuko.cfg('mod.search.button_cancel_time')
-
     message.interactive_paginate(results.length,
-    delete: true, cancel: cancel_time, owner: evt.message.author) do |index|
+    delete: true, owner: evt.message.author) do |index|
       message.edit(text: Yuyuko.tr('mod.search.ytsearch.result',
         user: evt.user, url: results[index-1], index: index, total: results.length))
     end

@@ -18,7 +18,7 @@ module Yuyuko::Interaction
 
         if (button = @buttons[evt.emoji.reaction])
           message.delete_reaction(evt.emoji.reaction, user: evt.user)
-          button.call()
+          button.call
         end
       end
     end
@@ -68,10 +68,11 @@ module Yuyuko::Interaction
       @interactive_buttons ||= Yuyuko::Interaction::Buttons.new(@bot, self, owner: owner)
     end
 
-    def interactive_paginate(pages, delete: false, cancel: nil, owner: nil)
+    def interactive_paginate(pages, delete: false, cancel: nil, owner: nil, start: 1)
       raise ArgumentError, 'No block provided' unless block_given?
 
-      yield(current_page = 1)
+      current_page = start || 1
+      yield(current_page) if start
 
       buttons = interactive_buttons(owner: owner)
 
@@ -97,6 +98,7 @@ module Yuyuko::Interaction
 
       buttons.add(Yuyuko::Interaction::BUTTON_STOP) { self.delete } if delete
 
+      cancel = Yuyuko.cfg('core.interaction.paginate_timeout') if cancel.nil?
       buttons.auto_cancel(cancel) if cancel
 
       buttons

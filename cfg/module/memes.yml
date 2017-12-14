@@ -1,8 +1,0 @@
-mod:
-  memes:
-    butcher_distance: 3
-    butcher_strings:
-      - in: "thanks yuyuko"
-        out: "you're welcome"
-      - in: "yuyuko kawaii"
-        out: "arigatou :3"

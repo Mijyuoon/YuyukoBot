@@ -10,7 +10,7 @@ module Yuyuko::Parser
   end
 
   module ArgumentWords
-    MATCHER = /\G\s*(?>```(.*?)```|([^\s\"`]+)|`([^`]*)`|(\"\")|"((?:[^\"]|\"\")*)"|(\S))(\s|\z)?/m
+    MATCHER = /\G\s*(?>```(.*?)```|([^\s"`]+)|`([^`]*)`|("")|"((?:[^"]|"")*)"|(\S))(\s|\z)?/m
 
     def call(input)
       words, accum = [], ''

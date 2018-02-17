@@ -103,7 +103,7 @@ module Search
     message.interactive_paginate(results_pages,
     delete: true, owner: evt.message.author) do |index|
       label = Yuyuko.tr('mod.search.gsearch.result', query: query)
-      body = results.slice((index - 1) * page_length, page_length)
+      body = results.slice((index - 1) * SEARCH_PAGE_LENGTH, SEARCH_PAGE_LENGTH)
       body = "#{label}\n\n#{body.join("\n\n")}"
 
       message.edit_embed('mod.search.embed.gsearch.result',

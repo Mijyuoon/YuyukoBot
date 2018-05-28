@@ -30,3 +30,6 @@ en:
         gsearch:
           usage: "%{cmd} <query>"
           desc: "Performs YouTube search for a specified query and displays the results."
+        lmgtfy:
+          usage: "%{cmd} <query>"
+          desc: "Lets you Google that query for them."

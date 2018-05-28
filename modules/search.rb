@@ -158,6 +158,6 @@ module Search
     arg_mode: :concat, arg_types: [:string],
     usage_info: 'mod.search.help.lmgtfy.usage',
     description: 'mod.search.help.lmgtfy.desc') do |evt, query|
-      evt.channel.send_message(text: "https://lmgtfy.com/?q=#{URI.escape(query)}", user: evt.user))
+      evt.channel.send_message(text: "https://lmgtfy.com/?q=#{URI.escape(query)}", user: evt.user)
   end
 end

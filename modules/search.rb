@@ -152,4 +152,11 @@ module Search
         user: evt.user, url: results[index-1], index: index, total: results.length))
     end
   end
+  
+  command(%w[lmgtfy lg],
+    arg_mode: :concat, arg_types: [:string],
+    usage_info: 'mod.search.help.lmgtfy.usage',
+    description: 'mod.search.help.lmgtfy.desc') do |evt, query|
+      evt.channel.send_message(text: "https://lmgtfy.com/?q=#{query}", user: evt.user))
+  end
 end
